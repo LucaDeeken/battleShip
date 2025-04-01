@@ -3,6 +3,7 @@ export class Ship {
     this.length = length;
     this.timesHit = 0;
     this.sunk = false;
+    this.position = 0;
   }
 
   hit() {
@@ -13,6 +14,10 @@ export class Ship {
     if (this.timesHit === this.length) {
       this.sunk = true;
     }
+  }
+
+  positionShip(coordinate) {
+    this.position = coordinate;
   }
 }
 
