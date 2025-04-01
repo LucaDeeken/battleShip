@@ -5,6 +5,7 @@
   "scripts": {
     "test": "jest"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
