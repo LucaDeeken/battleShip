@@ -100,13 +100,33 @@ eval("\n\n/* istanbul ignore next  */\nfunction styleTagTransform(css, styleElem
 
 /***/ }),
 
+/***/ "./src/gameBoard.js":
+/*!**************************!*\
+  !*** ./src/gameBoard.js ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   Gameboard: () => (/* binding */ Gameboard),\n/* harmony export */   initGameboard: () => (/* binding */ initGameboard)\n/* harmony export */ });\nclass Gameboard {\n  constructor() {\n    this.placeBoard = [];\n    for (let i = 0; i < 10; i++) {\n      let leftArray = [];\n      for (let j = 0; j < 10; j++) {\n        let cords = {\n          coordinate: i + j,\n          hit: false,\n        };\n        leftArray.push(cords);\n      }\n      this.placeBoard.push(leftArray);\n    }\n    this.fireBoard = [];\n    for (let i = 0; i < 10; i++) {\n        let leftArray = [];\n        for (let j = 0; j < 10; j++) {\n          let cords = {\n            coordinate: i + j,\n            hit: false,\n          };\n          leftArray.push(cords);\n        }\n        this.fireBoard.push(leftArray);\n      }\n  }\n}\n\nconst initGameboard = new Gameboard();\nconsole.log(initGameboard);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9zcmMvZ2FtZUJvYXJkLmpzIiwibWFwcGluZ3MiOiI7Ozs7O0FBQVE7QUFDUjtBQUNBO0FBQ0Esb0JBQW9CLFFBQVE7QUFDNUI7QUFDQSxzQkFBc0IsUUFBUTtBQUM5QjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxvQkFBb0IsUUFBUTtBQUM1QjtBQUNBLHdCQUF3QixRQUFRO0FBQ2hDO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBOztBQUVPO0FBQ1AiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly9iYXR0bGVzaGlwLy4vc3JjL2dhbWVCb2FyZC5qcz8yOGIzIl0sInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCAgY2xhc3MgR2FtZWJvYXJkIHtcbiAgY29uc3RydWN0b3IoKSB7XG4gICAgdGhpcy5wbGFjZUJvYXJkID0gW107XG4gICAgZm9yIChsZXQgaSA9IDA7IGkgPCAxMDsgaSsrKSB7XG4gICAgICBsZXQgbGVmdEFycmF5ID0gW107XG4gICAgICBmb3IgKGxldCBqID0gMDsgaiA8IDEwOyBqKyspIHtcbiAgICAgICAgbGV0IGNvcmRzID0ge1xuICAgICAgICAgIGNvb3JkaW5hdGU6IGkgKyBqLFxuICAgICAgICAgIGhpdDogZmFsc2UsXG4gICAgICAgIH07XG4gICAgICAgIGxlZnRBcnJheS5wdXNoKGNvcmRzKTtcbiAgICAgIH1cbiAgICAgIHRoaXMucGxhY2VCb2FyZC5wdXNoKGxlZnRBcnJheSk7XG4gICAgfVxuICAgIHRoaXMuZmlyZUJvYXJkID0gW107XG4gICAgZm9yIChsZXQgaSA9IDA7IGkgPCAxMDsgaSsrKSB7XG4gICAgICAgIGxldCBsZWZ0QXJyYXkgPSBbXTtcbiAgICAgICAgZm9yIChsZXQgaiA9IDA7IGogPCAxMDsgaisrKSB7XG4gICAgICAgICAgbGV0IGNvcmRzID0ge1xuICAgICAgICAgICAgY29vcmRpbmF0ZTogaSArIGosXG4gICAgICAgICAgICBoaXQ6IGZhbHNlLFxuICAgICAgICAgIH07XG4gICAgICAgICAgbGVmdEFycmF5LnB1c2goY29yZHMpO1xuICAgICAgICB9XG4gICAgICAgIHRoaXMuZmlyZUJvYXJkLnB1c2gobGVmdEFycmF5KTtcbiAgICAgIH1cbiAgfVxufVxuXG5leHBvcnQgY29uc3QgaW5pdEdhbWVib2FyZCA9IG5ldyBHYW1lYm9hcmQoKTtcbmNvbnNvbGUubG9nKGluaXRHYW1lYm9hcmQpOyJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./src/gameBoard.js\n");
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.css */ \"./src/style.css\");\n/* module decorator */ module = __webpack_require__.hmd(module);\n\n\nconsole.log(\"test\");\n\nfunction sum(a, b) {\n    return a + b;\n  }\n  module.exports = sum;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9zcmMvaW5kZXguanMiLCJtYXBwaW5ncyI6Ijs7O0FBQXFCOztBQUVyQjs7QUFFQTtBQUNBO0FBQ0E7QUFDQSIsInNvdXJjZXMiOlsid2VicGFjazovL2JhdHRsZXNoaXAvLi9zcmMvaW5kZXguanM/YjYzNSJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgXCIuL3N0eWxlLmNzc1wiO1xuXG5jb25zb2xlLmxvZyhcInRlc3RcIik7XG5cbmZ1bmN0aW9uIHN1bShhLCBiKSB7XG4gICAgcmV0dXJuIGEgKyBiO1xuICB9XG4gIG1vZHVsZS5leHBvcnRzID0gc3VtOyJdLCJuYW1lcyI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./src/index.js\n");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   sum: () => (/* binding */ sum)\n/* harmony export */ });\n/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.css */ \"./src/style.css\");\n/* harmony import */ var _gameBoard_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gameBoard.js */ \"./src/gameBoard.js\");\n/* harmony import */ var _ship_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ship.js */ \"./src/ship.js\");\n\n\n\n\n\n\nconsole.log(_gameBoard_js__WEBPACK_IMPORTED_MODULE_1__.initGameboard);\n\nfunction sum(a, b) {\n    return a + b;\n  }\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9zcmMvaW5kZXguanMiLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUFxQjtBQUNvQztBQUN6Qjs7OztBQUloQyxZQUFZLHdEQUFhOztBQUVsQjtBQUNQO0FBQ0EiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly9iYXR0bGVzaGlwLy4vc3JjL2luZGV4LmpzP2I2MzUiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFwiLi9zdHlsZS5jc3NcIjtcbmltcG9ydCB7Z2FtZUJvYXJkLCBpbml0R2FtZWJvYXJkIH0gZnJvbSBcIi4vZ2FtZUJvYXJkLmpzXCI7XG5pbXBvcnQge1NoaXAgfSBmcm9tIFwiLi9zaGlwLmpzXCI7XG5cblxuXG5jb25zb2xlLmxvZyhpbml0R2FtZWJvYXJkKTtcblxuZXhwb3J0IGZ1bmN0aW9uIHN1bShhLCBiKSB7XG4gICAgcmV0dXJuIGEgKyBiO1xuICB9XG4iXSwibmFtZXMiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./src/index.js\n");
+
+/***/ }),
+
+/***/ "./src/ship.js":
+/*!*********************!*\
+  !*** ./src/ship.js ***!
+  \*********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   Ship: () => (/* binding */ Ship),\n/* harmony export */   testShip: () => (/* binding */ testShip)\n/* harmony export */ });\nclass Ship {\n  constructor(length) {\n    this.length = length;\n    this.timesHit = 0;\n    this.sunk = false;\n  }\n\n  hit() {\n    this.timesHit++;\n  }\n\n  isSunk() {\n    if (this.timesHit === this.length) {\n      this.sunk = true;\n    }\n  }\n}\n\nconst testShip = new Ship(5);\n\nconsole.log(testShip);\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9zcmMvc2hpcC5qcyIsIm1hcHBpbmdzIjoiOzs7OztBQUFPO0FBQ1A7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBOztBQUVPOztBQUVQIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vYmF0dGxlc2hpcC8uL3NyYy9zaGlwLmpzP2QwMzciXSwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGNsYXNzIFNoaXAge1xuICBjb25zdHJ1Y3RvcihsZW5ndGgpIHtcbiAgICB0aGlzLmxlbmd0aCA9IGxlbmd0aDtcbiAgICB0aGlzLnRpbWVzSGl0ID0gMDtcbiAgICB0aGlzLnN1bmsgPSBmYWxzZTtcbiAgfVxuXG4gIGhpdCgpIHtcbiAgICB0aGlzLnRpbWVzSGl0Kys7XG4gIH1cblxuICBpc1N1bmsoKSB7XG4gICAgaWYgKHRoaXMudGltZXNIaXQgPT09IHRoaXMubGVuZ3RoKSB7XG4gICAgICB0aGlzLnN1bmsgPSB0cnVlO1xuICAgIH1cbiAgfVxufVxuXG5leHBvcnQgY29uc3QgdGVzdFNoaXAgPSBuZXcgU2hpcCg1KTtcblxuY29uc29sZS5sb2codGVzdFNoaXApO1xuIl0sIm5hbWVzIjpbXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./src/ship.js\n");
 
 /***/ }),
 
@@ -135,15 +155,12 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
 /******/ 			id: moduleId,
-/******/ 			loaded: false,
+/******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -174,21 +191,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 		};
 /******/ 	})();
 /******/ 	
-/******/ 	/* webpack/runtime/harmony module decorator */
-/******/ 	(() => {
-/******/ 		__webpack_require__.hmd = (module) => {
-/******/ 			module = Object.create(module);
-/******/ 			if (!module.children) module.children = [];
-/******/ 			Object.defineProperty(module, 'exports', {
-/******/ 				enumerable: true,
-/******/ 				set: () => {
-/******/ 					throw new Error('ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + module.id);
-/******/ 				}
-/******/ 			});
-/******/ 			return module;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -214,7 +216,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	// This entry module can't be inlined because the eval-source-map devtool is used.
 /******/ 	var __webpack_exports__ = __webpack_require__("./src/index.js");
 /******/ 	
 /******/ })()
