@@ -7,7 +7,7 @@ export class Gameboard {
       let leftArray = [];
       for (let j = 0; j < 10; j++) {
         let cords = {
-          coordinate: i + j,
+          coordinate: j,
           hit: false,
         };
         leftArray.push(cords);
@@ -19,7 +19,7 @@ export class Gameboard {
       let leftArray = [];
       for (let j = 0; j < 10; j++) {
         let cords = {
-          coordinate: i + j,
+          coordinate: j,
           hit: false,
         };
         leftArray.push(cords);
@@ -37,7 +37,4 @@ export class Gameboard {
 
   receiveAttack() {}
   
-  positionShip(chosenShip) {
-
-  }
 }

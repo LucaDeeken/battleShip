@@ -9,5 +9,5 @@ export class Player {
 }
 
 
-const testPlayer = new Player("Luca");
-console.log(testPlayer.gameboard);
+export const playerOne = new Player("Luca");
+console.log(playerOne.gameboard);
