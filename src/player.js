@@ -1,13 +1,14 @@
 import { Gameboard } from "./gameBoard.js";
-import {Ship } from "./ship.js";
+import { Ship } from "./ship.js";
 
 export class Player {
-    constructor(name) {
-        this.name = name;
-        this.gameboard = new Gameboard();
-    }
+  constructor(name) {
+    this.name = name;
+    this.gameboard = new Gameboard();
+  }
 }
 
-
 export const playerOne = new Player("Luca");
-console.log(playerOne.gameboard);
+//console.log(playerOne.gameboard.randomSpawn())
+
+//each fieldGrid has an index, which guides to the equivalent object in the gameboard

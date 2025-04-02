@@ -195,4 +195,6 @@ const config = {
   // watchman: true,
 };
 
-export default config;
+module.exports = {
+  testEnvironment: "jest-environment-jsdom",  // Hier musst du sicherstellen, dass "jest-environment-jsdom" korrekt gesetzt ist
+};
