@@ -10,6 +10,7 @@ export class Gameboard {
           coordinate: j,
           hit: false,
           ship: null,
+          index: `${i}${j}`,
         };
         leftArray.push(cords);
       }
@@ -31,7 +32,13 @@ export class Gameboard {
     this.ships = {
       verySmall: new Ship(2),
       massive: new Ship(5),
+      small: new Ship(3),
+      smallTwo: new Ship(3),
+      medium: new Ship(4),
     };
+    this.arrayOfShips = [];
+    this.firstIter = true;
+    this.secondIter = true;
   }
 
   receiveAttack(gridObject) {
@@ -48,7 +55,6 @@ export class Gameboard {
     } else {
       objectGrid = this.placeBoard[dataIndex[0]][dataIndex[1]];
     }
-    console.log(objectGrid);
     return objectGrid;
   }
 
@@ -62,7 +68,8 @@ export class Gameboard {
       fieldArea.appendChild(fieldBlock);
       const dataIndex = fieldBlock.dataset.index;
       fieldBlock.addEventListener("click", () => {
-        this.findObjectFromGrid(dataIndex);
+        let objectClick = this.findObjectFromGrid(dataIndex);
+        console.log(objectClick);
       });
     }
     for (let j = 0; j < 100; j++) {
@@ -79,39 +86,50 @@ export class Gameboard {
 
   randomSpawn() {
     const movements = [-1, 1, 10, -10];
-    console.log(this.ships);
     let startingObject = 0;
     let spawnLocation = 0;
+    this.arrayOfShips = [];
+    let threeGridShipColorAlreadyThere = false;
     for (let key in this.ships) {
       const lengthOfShip = this.ships[key].length;
 
-      let firstIter = true;
-      let secondIter = true;
+      this.firstIter = true;
+      this.secondIter = true;
       let left = false;
       let up = false;
       let down = false;
       let right = false;
       const sailingShip = () => {
-        if (firstIter === true) {
+        if (this.firstIter === true) {
           spawnLocation = Math.floor(Math.random() * 100);
-          console.log(spawnLocation);
           startingObject = this.findObjectFromGrid(spawnLocation);
+          this.arrayOfShips.push(startingObject);
+          if (startingObject.ship === true) {
+            this.arrayOfShips = [];
+            return sailingShip();
+          }
           startingObject.ship = true;
-          firstIter = false;
-           left = false;
-           up = false;
-           down = false;
+          this.firstIter = false;
+          left = false;
+          up = false;
+          down = false;
           right = false;
         }
         let randomCord =
           movements[Math.floor(Math.random() * movements.length)];
         if (randomCord + spawnLocation < 0 || randomCord + spawnLocation > 99) {
-          firstIter = true;
-          secondIter = true;
+          this.resetPlacementProcess();
+          return sailingShip();
+        }
+        let testIfPlaceIsAlreadTaken = this.findObjectFromGrid(
+          spawnLocation + randomCord
+        );
+        if (testIfPlaceIsAlreadTaken.ship === true) {
+          this.resetPlacementProcess();
           return sailingShip();
         }
 
-        if (secondIter === true) {
+        if (this.secondIter === true) {
           switch (randomCord) {
             case -1:
               left = true;
@@ -126,14 +144,50 @@ export class Gameboard {
               up = true;
               break;
           }
+
+          let numToString = String(spawnLocation);
+          if (numToString.length < 2) {
+            numToString = "0" + numToString;
+          }
+          if (
+            (left === true && numToString[1] === "0") ||
+            (right === true && numToString[1] === "9")
+          ) {
+            this.resetPlacementProcess();
+            return sailingShip();
+          }
           spawnLocation = randomCord + spawnLocation;
           startingObject = this.findObjectFromGrid(spawnLocation);
+          this.arrayOfShips.push(startingObject);
           startingObject.ship = true;
         }
         for (let i = 0; i < lengthOfShip - 2; i++) {
-          if (randomCord + spawnLocation < 0 || randomCord + spawnLocation > 99) {
-            firstIter = true;
-            secondIter = true;
+          startingObject = 0;
+          let numToString = String(spawnLocation);
+          if (numToString.length < 2) {
+            numToString = "0" + numToString;
+          }
+
+          if (
+            (left === true && numToString[1] === "0") ||
+            (right === true && numToString[1] === "9")
+          ) {
+            this.resetPlacementProcess();
+            return sailingShip();
+          }
+
+          if (
+            randomCord + spawnLocation < 0 ||
+            randomCord + spawnLocation > 99
+          ) {
+            this.resetPlacementProcess();
+            return sailingShip();
+          }
+          testIfPlaceIsAlreadTaken = this.findObjectFromGrid(
+            spawnLocation + randomCord
+          );
+          if (testIfPlaceIsAlreadTaken.ship === true) {
+            this.resetPlacementProcess();
             return sailingShip();
           }
           if (left === true) {
@@ -146,57 +200,74 @@ export class Gameboard {
             spawnLocation = spawnLocation - 10;
           }
           startingObject = this.findObjectFromGrid(spawnLocation);
+          this.arrayOfShips.push(startingObject);
           startingObject.ship = true;
         }
-      }
-      sailingShip();
-    }
+      };
 
-    // }
+      this.arrayOfShips = [];
+      sailingShip();
+      let color = "";
+      switch (lengthOfShip) {
+        case 2:
+          color = "#FF00FF";
+          break;
+        case 3:
+          if(threeGridShipColorAlreadyThere===true) {
+            color = "#FF2E63";
+          } else {
+            color = "#FF7300";
+            threeGridShipColorAlreadyThere = true;
+          }
+          break;
+        case 4:
+          color = "#39FF14";
+          break;
+        case 5:
+          color = "#00FFF7";
+          break;
+      }
+      this.printColorOnShipGrids(color);
+    }
+  }
+
+  resetPlacementProcess() {
+    this.arrayOfShips.forEach((item) => (item.ship = null));
+    this.arrayOfShips = [];
+    this.firstIter = true;
+    this.secondIter = true;
+  }
+
+  printColorOnShipGrids(color) {
+    let currentBackgroundColor = "rgb(255, 255, 255)";
+    let element = "";
+
+    for (let i = 0; i < this.placeBoard.length; i++) {
+      let eleBackgroundColor = "";
+      this.placeBoard[i].forEach((item) => {
+        if (item.ship) {
+          let firstNum = item.index[0];
+          if (firstNum === "0") {
+             element = document.querySelector(
+              `[data-index="${item.index[1]}"]`
+            );
+            eleBackgroundColor =
+              window.getComputedStyle(element).backgroundColor;             
+            if (eleBackgroundColor === currentBackgroundColor) {
+              element.style.backgroundColor = color;
+            }
+          } else {
+             element = document.querySelector(
+              `[data-index="${item.index}"]`
+            );
+            eleBackgroundColor =
+              window.getComputedStyle(element).backgroundColor;
+            if (eleBackgroundColor === currentBackgroundColor) {
+              element.style.backgroundColor = color;
+            }
+          }
+        }
+      });
+    }
   }
 }
-
-// for (let i = 0; i < lengthOfShip; i++) {
-//   let randomCord =
-//     movements[Math.floor(Math.random() * movements.length)];
-//   console.log(randomCord);
-//   while (
-//     spawnLocation + randomCord > 0 &&
-//     spawnLocation + randomCord < 99
-//   ) {
-//     spawnLocation = spawnLocation + randomCord;
-//      startingObject = this.findObjectFromGrid(spawnLocation);
-//     startingObject.ship = true;
-//   }
-// }
-
-// while((randomCord + spawnLocation)<0||(randomCord+spawnLocation)>99) {
-//   randomCord = movements[Math.floor(Math.random() * movements.length)];
-// }
-// switch (randomCord) {
-//   case -1:
-//     left = true;
-//   case 1:
-//     right = true;
-//   case 10:
-//     down = true;
-//   case -10:
-//     up = true;
-// }
-// spawnLocation = randomCord + spawnLocation;
-// startingObject = this.findObjectFromGrid(spawnLocation);
-// startingObject.ship = true;
-// for (let i = 0; i < lengthOfShip - 2; i++) {
-//   if (left === true) {
-//     spawnLocation = spawnLocation - 1;
-//   } else if (right === true) {
-//     spawnLocation = spawnLocation + 1;
-//   } else if (down === true) {
-//     spawnLocation = spawnLocation + 10;
-//   } else if (up === true) {
-//     spawnLocation = spawnLocation - 10;
-//   }
-//   startingObject = this.findObjectFromGrid(spawnLocation);
-//   startingObject.ship = true;
-// }
-// }
