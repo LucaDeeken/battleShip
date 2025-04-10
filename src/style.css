@@ -64,7 +64,6 @@ body {
   grid-template-rows: 0.2fr 5fr;
     height: 100%;
     width: 100%;
-    gap: 10px;
     background: linear-gradient(135deg, #A7C7E7, #174062);
     transition: background-color 1s ease;
   }

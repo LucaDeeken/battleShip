@@ -216,7 +216,7 @@ export class Gameboard {
           if(threeGridShipColorAlreadyThere===true) {
             color = "#FF2E63";
           } else {
-            color = "#FF7300";
+            color = "#FFD700";
             threeGridShipColorAlreadyThere = true;
           }
           break;
@@ -224,7 +224,7 @@ export class Gameboard {
           color = "#39FF14";
           break;
         case 5:
-          color = "#00FFF7";
+          color = "#00CFFF";
           break;
       }
       this.printColorOnShipGrids(color);
