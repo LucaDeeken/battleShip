@@ -39,11 +39,13 @@ export class Gameboard {
     this.arrayOfShips = [];
     this.firstIter = true;
     this.secondIter = true;
+    this.threeGridShipUsed = false;
   }
 
   receiveAttack(gridObject) {
     if (gridObject.ship != null && gridObject.hit === false) {
       gridObject.hit = true;
+      this.markHitShips();
     }
   }
 
@@ -69,6 +71,7 @@ export class Gameboard {
       const dataIndex = fieldBlock.dataset.index;
       fieldBlock.addEventListener("click", () => {
         let objectClick = this.findObjectFromGrid(dataIndex);
+        this.receiveAttack(objectClick);
         console.log(objectClick);
       });
     }
@@ -89,10 +92,8 @@ export class Gameboard {
     let startingObject = 0;
     let spawnLocation = 0;
     this.arrayOfShips = [];
-    let threeGridShipColorAlreadyThere = false;
     for (let key in this.ships) {
       const lengthOfShip = this.ships[key].length;
-
       this.firstIter = true;
       this.secondIter = true;
       let left = false;
@@ -207,28 +208,11 @@ export class Gameboard {
 
       this.arrayOfShips = [];
       sailingShip();
-      let color = "";
-      switch (lengthOfShip) {
-        case 2:
-          color = "#FF00FF";
-          break;
-        case 3:
-          if(threeGridShipColorAlreadyThere===true) {
-            color = "#FF2E63";
-          } else {
-            color = "#FFD700";
-            threeGridShipColorAlreadyThere = true;
-          }
-          break;
-        case 4:
-          color = "#39FF14";
-          break;
-        case 5:
-          color = "#00CFFF";
-          break;
-      }
+      let color = this.getShipColor(lengthOfShip);
       this.printColorOnShipGrids(color);
     }
+    let savedField = document.querySelector(".fieldArea");
+    return savedField;
   }
 
   resetPlacementProcess() {
@@ -238,6 +222,30 @@ export class Gameboard {
     this.secondIter = true;
   }
 
+  getShipColor(lengthOfShip) {
+    let color = "";
+    switch (lengthOfShip) {
+      case 2:
+        color = "#FF00FF";
+        break;
+      case 3:
+        if (this.threeGridShipColorAlreadyThere === true) {
+          color = "#FF2E63";
+        } else {
+          color = "#FFD700";
+          this.threeGridShipColorAlreadyThere = true;
+        }
+        break;
+      case 4:
+        color = "#39FF14";
+        break;
+      case 5:
+        color = "#00CFFF";
+        break;
+    }
+    return color;
+  }
+
   printColorOnShipGrids(color) {
     let currentBackgroundColor = "rgb(255, 255, 255)";
     let element = "";
@@ -245,26 +253,52 @@ export class Gameboard {
     for (let i = 0; i < this.placeBoard.length; i++) {
       let eleBackgroundColor = "";
       this.placeBoard[i].forEach((item) => {
-        if (item.ship) {
+        if (item.ship && item.hit === false) {
           let firstNum = item.index[0];
           if (firstNum === "0") {
-             element = document.querySelector(
-              `[data-index="${item.index[1]}"]`
-            );
-            eleBackgroundColor =
-              window.getComputedStyle(element).backgroundColor;             
-            if (eleBackgroundColor === currentBackgroundColor) {
-              element.style.backgroundColor = color;
-            }
-          } else {
-             element = document.querySelector(
-              `[data-index="${item.index}"]`
-            );
+            element = document.querySelector(`[data-index="${item.index[1]}"]`);
             eleBackgroundColor =
               window.getComputedStyle(element).backgroundColor;
             if (eleBackgroundColor === currentBackgroundColor) {
               element.style.backgroundColor = color;
             }
+          } else {
+            element = document.querySelector(`[data-index="${item.index}"]`);
+            eleBackgroundColor =
+              window.getComputedStyle(element).backgroundColor;
+            if (eleBackgroundColor === currentBackgroundColor) {
+              element.style.backgroundColor = color;
+            }
+          }
+        }
+      });
+    }
+  }
+
+  hideShips() {
+    const savedField = document.querySelector(".fireArea");
+    const fireGrids = savedField.getElementsByClassName("fieldBlock");
+    for (let i = 0; i < fireGrids.length; i++) {
+      fireGrids[i].style.backgroundColor = "rgb(255, 255, 255)";
+    }
+  }
+
+  markHitShips() {
+    let element = "";
+    for (let i = 0; i < this.placeBoard.length; i++) {
+      this.placeBoard[i].forEach((item) => {
+        if (item.ship && item.hit === true) {
+          let firstNum = item.index[0];
+          console.log(firstNum);
+          if (firstNum === "0") {
+            element = document.querySelector(`[data-index="${item.index[1]}"]`);
+            element.style.backgroundColor = "black";
+            console.log(element);
+          } else {
+            element = document.querySelector(`[data-index="${item.index}"]`);
+            element.style.backgroundColor = "black";
+            console.log(element);
+
           }
         }
       });

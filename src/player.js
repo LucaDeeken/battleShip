@@ -8,7 +8,6 @@ export class Player {
   }
 }
 
-export const playerOne = new Player("Luca");
 //console.log(playerOne.gameboard.randomSpawn())
 
 //each fieldGrid has an index, which guides to the equivalent object in the gameboard

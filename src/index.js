@@ -1,7 +1,5 @@
 import "./style.css";
-import { Player, playerOne } from "./player.js";
+import { Player } from "./player.js";
 import {Ship } from "./ship.js";
 import {buildFields } from "./DOMmanipulation.js";
-
-playerOne.gameboard.buildFields();
-playerOne.gameboard.randomSpawn();
+import {startGame } from "./gameFlow.js";
