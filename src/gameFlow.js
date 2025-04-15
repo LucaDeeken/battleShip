@@ -40,10 +40,7 @@ export function startGame() {
     let wholeFieldPlaceArea = document.querySelector(".fieldArea");
     wholeFieldPlaceArea.replaceWith(clonedFieldPlayerOneRecolor);
 
-    let fieldBlock =
-      clonedFieldPlayerOneRecolor.getElementsByClassName("fieldBlock");
 
-    buildEventListenersplayers(player1, fieldBlock);
 
 
     
@@ -51,8 +48,10 @@ export function startGame() {
     let wholeFieldFireArea = document.querySelector(".fireArea");
     wholeFieldFireArea.replaceWith(clonedFieldPlayerTwo);
 
-    fieldBlock = clonedFieldPlayerTwo.getElementsByClassName("fieldBlock");
-    buildEventListenersplayers(player2, fieldBlock);
+    const fireFieldMarks = document.querySelector(".fireArea");
+    buildEventListenersplayers(player2, fireFieldMarks);
+    refreshOwnBoard(player1);
+
     //player1.gameboard.markHitShips();
     //player1.gameboard.hideShips();
   }
@@ -69,15 +68,13 @@ export function startGame() {
     let wholeFieldFireArea = document.querySelector(".fireArea");
     let wholeFieldPlaceArea = document.querySelector(".fieldArea");
     wholeFieldFireArea.replaceWith(clonedFieldPlayerOne);
-    let fieldBlock =
-    clonedFieldPlayerOne.getElementsByClassName("fieldBlock");
-    buildEventListenersplayers(player1, fieldBlock);
+
+    const fireFieldMarks = document.querySelector(".fireArea");
+    buildEventListenersplayers(player1, fireFieldMarks);
 
     wholeFieldPlaceArea.replaceWith(clonedFieldPlayerTwoRecolor);
-    fieldBlock =
-    clonedFieldPlayerTwoRecolor.getElementsByClassName("fieldBlock");
+    refreshOwnBoard(player2);
 
-    buildEventListenersplayers(player2, fieldBlock);
     
     //player2.gameboard.markHitShips();
     //player2.gameboard.hideShips();
@@ -92,17 +89,25 @@ export function startGame() {
     playerTwoTurn(clonedFieldPlayerOne, player2, clonedFieldPlayerTwoRecolor);
   });
 
-  function buildEventListenersplayers(player, fieldBlock) {
+  function buildEventListenersplayers(player, fireFieldMarks) {
 
-    for (let i = 0; i < fieldBlock.length; i++) {
-      fieldBlock[i].addEventListener("click", () => {
-        let dataIndex = fieldBlock[i].dataset.index;
+    const fieldBlockFire = fireFieldMarks.getElementsByClassName("fieldBlock");
+    for (let i = 0; i < fieldBlockFire.length; i++) {
+      fieldBlockFire[i].addEventListener("click", () => {
+        let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
-        player2.gameboard.receiveAttack(objectClick);
+        console.log(player);
+        player.gameboard.receiveAttack(objectClick, fireFieldMarks);
         console.log(objectClick);
         console.log("yo");
       });
     }
+  }
+
+  function refreshOwnBoard(player) {
+    const ownBoard = document.querySelector(".fieldArea");
+        player.gameboard.markHitShips(ownBoard);
+ 
   }
 }
 startGame();

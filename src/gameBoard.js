@@ -42,10 +42,10 @@ export class Gameboard {
     this.threeGridShipUsed = false;
   }
 
-  receiveAttack(gridObject) {
-    if (gridObject.ship != null && gridObject.hit === false) {
+  receiveAttack(gridObject, gameboard) {
+    if (gridObject.hit === false) {
       gridObject.hit = true;
-      this.markHitShips();
+      this.markHitShips(gameboard);
     }
   }
 
@@ -226,18 +226,18 @@ export class Gameboard {
     let color = "";
     switch (lengthOfShip) {
       case 2:
-        color = "#FF00FF";
+        color = "#FF1493";
         break;
       case 3:
         if (this.threeGridShipColorAlreadyThere === true) {
-          color = "#FF2E63";
+          color = "#D75B3E";
         } else {
           color = "#FFD700";
           this.threeGridShipColorAlreadyThere = true;
         }
         break;
       case 4:
-        color = "#39FF14";
+        color = "#6B8E23";
         break;
       case 5:
         color = "#00CFFF";
@@ -283,7 +283,7 @@ export class Gameboard {
     }
   }
 
-  markHitShips() {
+  markHitShips(gameBoard) {
     let element = "";
     for (let i = 0; i < this.placeBoard.length; i++) {
       this.placeBoard[i].forEach((item) => {
@@ -291,14 +291,31 @@ export class Gameboard {
           let firstNum = item.index[0];
           console.log(firstNum);
           if (firstNum === "0") {
-            element = document.querySelector(`[data-index="${item.index[1]}"]`);
-            element.style.backgroundColor = "black";
+            element = gameBoard.querySelector(
+              `[data-index="${item.index[1]}"]`
+            );
+            element.textContent = "💥";
+            element.classList.add("hitEmoji");
             console.log(element);
           } else {
-            element = document.querySelector(`[data-index="${item.index}"]`);
-            element.style.backgroundColor = "black";
+            element = gameBoard.querySelector(`[data-index="${item.index}"]`);
+            element.textContent = "💥";
+            element.classList.add("hitEmoji");
             console.log(element);
-
+          }
+        }
+        if (item.ship === null && item.hit === true) {
+          let firstNum = item.index[0];
+          if (firstNum === "0") {
+            element = gameBoard.querySelector(
+              `[data-index="${item.index[1]}"]`
+            );
+            element.textContent = "🌊";
+            element.classList.add("waterEmoji");
+          } else {
+            element = gameBoard.querySelector(`[data-index="${item.index}"]`);
+            element.classList.add("waterEmoji");
+            element.textContent = "🌊";
           }
         }
       });
