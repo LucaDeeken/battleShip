@@ -2,8 +2,6 @@ import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
 
-const switchBtn = document.getElementById("switch");
-const switchBtn2 = document.getElementById("switch2");
 
 export function startGame() {
   const name = "Luca";
@@ -28,6 +26,8 @@ export function startGame() {
   wholeFieldPlaceArea.innerHTML = "";
   wholeFieldFireArea.innerHTML = "";
 
+  playerOneTurn(clonedFieldPlayerTwo, player1, clonedFieldPlayerOneRecolor);
+
   function playerOneTurn(
     clonedFieldPlayerTwo,
     player1,
@@ -39,21 +39,12 @@ export function startGame() {
     clonedFieldPlayerTwo.classList.add("fireArea");
     let wholeFieldPlaceArea = document.querySelector(".fieldArea");
     wholeFieldPlaceArea.replaceWith(clonedFieldPlayerOneRecolor);
-
-
-
-
-    
-
     let wholeFieldFireArea = document.querySelector(".fireArea");
     wholeFieldFireArea.replaceWith(clonedFieldPlayerTwo);
-
     const fireFieldMarks = document.querySelector(".fireArea");
     buildEventListenersplayers(player2, fireFieldMarks);
     refreshOwnBoard(player1);
-
-    //player1.gameboard.markHitShips();
-    //player1.gameboard.hideShips();
+    player1.gameboard.hideShips();
   }
 
   function playerTwoTurn(
@@ -68,46 +59,43 @@ export function startGame() {
     let wholeFieldFireArea = document.querySelector(".fireArea");
     let wholeFieldPlaceArea = document.querySelector(".fieldArea");
     wholeFieldFireArea.replaceWith(clonedFieldPlayerOne);
-
     const fireFieldMarks = document.querySelector(".fireArea");
     buildEventListenersplayers(player1, fireFieldMarks);
-
     wholeFieldPlaceArea.replaceWith(clonedFieldPlayerTwoRecolor);
     refreshOwnBoard(player2);
-
-    
-    //player2.gameboard.markHitShips();
-    //player2.gameboard.hideShips();
+    player2.gameboard.hideShips();
   }
 
 
-  switchBtn.addEventListener("click", () => {
-    playerOneTurn(clonedFieldPlayerTwo, player1, clonedFieldPlayerOneRecolor);
-  });
-
-  switchBtn2.addEventListener("click", () => {
-    playerTwoTurn(clonedFieldPlayerOne, player2, clonedFieldPlayerTwoRecolor);
-  });
-
   function buildEventListenersplayers(player, fireFieldMarks) {
-
+    console.log(player);
     const fieldBlockFire = fireFieldMarks.getElementsByClassName("fieldBlock");
     for (let i = 0; i < fieldBlockFire.length; i++) {
-      fieldBlockFire[i].addEventListener("click", () => {
+      fieldBlockFire[i].onclick = null;
+      fieldBlockFire[i].onclick = () => {
+        document.body.classList.add('no-clicks');
         let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
-        console.log(player);
         player.gameboard.receiveAttack(objectClick, fireFieldMarks);
-        console.log(objectClick);
-        console.log("yo");
-      });
+    
+        // waits for two seconds to change playersTurn, so the markedField can be seen first
+        setTimeout(() => {
+          if (player.name === "Lotta") {
+            playerTwoTurn(clonedFieldPlayerOne, player2, clonedFieldPlayerTwoRecolor);
+          } else {
+            playerOneTurn(clonedFieldPlayerTwo, player1, clonedFieldPlayerOneRecolor);
+          }
+          document.body.classList.remove('no-clicks');
+        }, 2000);
+        
+      
+    }
     }
   }
 
   function refreshOwnBoard(player) {
     const ownBoard = document.querySelector(".fieldArea");
-        player.gameboard.markHitShips(ownBoard);
- 
+    player.gameboard.markHitShips(ownBoard);
   }
 }
 startGame();

@@ -247,7 +247,7 @@ export class Gameboard {
   }
 
   printColorOnShipGrids(color) {
-    let currentBackgroundColor = "rgb(255, 255, 255)";
+    let currentBackgroundColor = "rgb(40, 93, 172)";
     let element = "";
 
     for (let i = 0; i < this.placeBoard.length; i++) {
@@ -279,7 +279,7 @@ export class Gameboard {
     const savedField = document.querySelector(".fireArea");
     const fireGrids = savedField.getElementsByClassName("fieldBlock");
     for (let i = 0; i < fireGrids.length; i++) {
-      fireGrids[i].style.backgroundColor = "rgb(255, 255, 255)";
+      fireGrids[i].style.backgroundColor = "rgb(40, 93, 172)";
     }
   }
 
