@@ -4,6 +4,8 @@ import { Player } from "./player.js";
 
 
 export function startGame() {
+  const mainArea = document.getElementById("mainArea");
+  mainArea.classList.remove("hidden");
   const name = "Luca";
   let player1 = new Player(name);
   player1.gameboard.buildFields();
@@ -98,4 +100,20 @@ export function startGame() {
     player.gameboard.markHitShips(ownBoard);
   }
 }
-startGame();
+function startDialog() {
+  const dialog = document.getElementById('createProject');
+  dialog.showModal(); // Öffnet den Dialog
+  dialog.classList.remove("hidden");
+  const startBtn = document.getElementById("twoPlayerIcon");
+  startBtn.addEventListener("click", () => {
+    dialog.classList.add("hidden");
+    setTimeout(() => {
+      dialog.close();
+      startGame();
+    }, 500); // 300ms = Dauer der Transition
+ 
+  })
+
+}
+
+startDialog();

@@ -18,13 +18,32 @@
                                                           
       </h1>
     </div>
-    <main id="mainArea">
+    <main id="mainArea" class="hidden">
         <div class="bothFields">
           <h2 class="ownFleet">Own Fleet</h2>
         <div class="fieldArea"></div>
         <h2 class="enemyFleet">Enemy Fleet</h2>
         <div class="fireArea"></div>
       </div>
+      <dialog id="createProject" class="hidden">
+        <form method="dialog">
+           <div id="playerModeContainer">
+             <h2 id="playerMode">Who Do You Want to Play Against?</h2>
+             <div id="TwoPlayerMode">
+               <h3 id="headerPlayerMode">Versus Friend</h2>
+               <img src="./images/twoPlayer.png" alt="" aria-label="Start Two-Player-Mode" height="250px" width="auto" id="twoPlayerIcon">
+ 
+             </div>
+             <div id="OnePlayerMode">
+               <h3 id="headerPlayerMode">Versus Computer</h2>
+               <img src="./images/robot.png" alt="" aria-label="Start Single-Player-Mode" height="250px" width="auto" id="twoPlayerIcon"> 
+ 
+             </div>
+           </div>
+ 
+ 
+         </form>
+     </dialog>
     </main>
   </body>
 </html>

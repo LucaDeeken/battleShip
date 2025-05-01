@@ -185,3 +185,91 @@ main {
 .no-clicks {
   pointer-events: none;
 }
+
+
+dialog {
+  border-radius: 15px;
+  justify-self: center;
+  align-self: center;
+  width: 650px;
+  height: 470px;
+  background-color: rgb(33, 32, 32, 0.89);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  border: none;
+  font-family: monospace;
+  transition: opacity 0.7s ease;
+}
+
+form {
+  height: 100%;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.visible {
+  opacity: 1;
+}
+
+#twoPlayerIcon {
+  cursor: pointer;
+  padding: 30px;
+  
+}
+
+#playerModeContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 10fr;
+  height: 100%;
+  justify-items: center;
+  align-items: center;
+  column-gap: 20px;
+  row-gap: 65px;
+}
+
+#TwoPlayerMode {
+  grid-column: 1/2;
+  grid-template-rows: 1fr 6fr;
+  display: grid;
+  height: 100%;
+  width: 100%;
+  place-content: center;
+
+}
+
+#TwoPlayerMode:hover {
+  background-color: rgb(63, 132, 196);
+border-radius: 30px;
+cursor: pointer;
+}
+
+#OnePlayerMode {
+  grid-column: 2/3;
+  grid-template-rows: 1fr 6fr;
+  display: grid;
+  height: 100%;
+  width: 100%;
+  place-content: center;
+}
+#OnePlayerMode:hover {
+  background-color: rgb(63, 132, 196);
+  border-radius: 30px;
+  cursor: pointer;
+  }
+#playerMode {
+  color: rgb(240, 237, 237);
+  grid-column: 1/3;
+text-align: center;
+margin-top: 20px;
+font-size: 24px;
+border-bottom: 2px solid silver;
+}
+#headerPlayerMode {
+  display: grid;
+  color: rgb(240, 237, 237);
+  place-items: center;
+  font-size: 16px;
+  margin-top: 20px;
+}
