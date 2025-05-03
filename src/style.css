@@ -180,12 +180,36 @@ main {
   height: 80%;
   width: 80%;
   background-color: rgb(40, 93, 172);
+  
 }
 
 .no-clicks {
   pointer-events: none;
 }
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+dialog.closing {
+  animation: slideDown 0.6s ease forwards;
+}
 
 dialog {
   border-radius: 15px;
@@ -197,7 +221,9 @@ dialog {
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
   border: none;
   font-family: monospace;
-  transition: opacity 0.7s ease;
+  margin-top: 50px;
+  transform: translateX(-50%);
+  animation: slideUp 0.6s ease forwards;
 }
 
 form {
@@ -214,7 +240,10 @@ form {
 
 #twoPlayerIcon {
   cursor: pointer;
-  padding: 30px;
+  padding:40px;
+  background-color: rgba(89, 174, 253, 0.55);
+  border-radius: 50px;
+  border: 1px solid rgb(24, 24, 24); 
   
 }
 
@@ -225,37 +254,45 @@ form {
   height: 100%;
   justify-items: center;
   align-items: center;
-  column-gap: 20px;
+  column-gap: 50px;
   row-gap: 65px;
 }
 
 #TwoPlayerMode {
   grid-column: 1/2;
-  grid-template-rows: 1fr 6fr;
+  grid-template-rows: 1fr 4fr;
   display: grid;
-  height: 100%;
-  width: 100%;
+  height: 95%;
+  width: 95%;
   place-content: center;
+  background-color: rgba(58, 142, 221, 0.35);
+  border-radius: 50px;
+  margin-left: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
 }
 
 #TwoPlayerMode:hover {
-  background-color: rgb(63, 132, 196);
-border-radius: 30px;
+  background-color: rgb(63, 132, 196, 0.89);
 cursor: pointer;
 }
 
 #OnePlayerMode {
   grid-column: 2/3;
-  grid-template-rows: 1fr 6fr;
+  grid-template-rows: 1fr 4fr;
   display: grid;
-  height: 100%;
-  width: 100%;
+  height: 95%;
+  width: 95%;
   place-content: center;
+  background-color: rgba(63, 132, 196, 0.35);
+  border-radius: 50px;
+  margin-right: 30px;
+  margin-bottom: 30px;
 }
 #OnePlayerMode:hover {
-  background-color: rgb(63, 132, 196);
-  border-radius: 30px;
+  background-color: rgb(63, 132, 196, 0.89);
+ 
   cursor: pointer;
   }
 #playerMode {

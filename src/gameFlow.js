@@ -104,13 +104,14 @@ function startDialog() {
   const dialog = document.getElementById('createProject');
   dialog.showModal(); // Öffnet den Dialog
   dialog.classList.remove("hidden");
-  const startBtn = document.getElementById("twoPlayerIcon");
+  const startBtn = document.getElementById("TwoPlayerMode");
   startBtn.addEventListener("click", () => {
+    dialog.classList.add("closing");
     dialog.classList.add("hidden");
     setTimeout(() => {
       dialog.close();
       startGame();
-    }, 500); // 300ms = Dauer der Transition
+    }, 600); // 300ms = Dauer der Transition
  
   })
 
