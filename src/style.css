@@ -78,6 +78,7 @@ body {
   justify-self: center;
   white-space: pre;
   margin-bottom: 40px;
+  margin-left: 10px;
   height: 140px;
   font-size: 8px;
   
@@ -94,6 +95,9 @@ main {
     height: 90%;
     background-color: rgb(33, 32, 32, 0.89);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.5s ease; /* Übergangsdauer 0.5s */
+
+    
 
   }
     
@@ -112,6 +116,7 @@ main {
   grid-row: 2/3;
   column-gap: 50px;
   row-gap: 10px;
+  
 
 }
 .fieldArea {
@@ -186,6 +191,8 @@ main {
 .no-clicks {
   pointer-events: none;
 }
+
+/* Animations */
 @keyframes slideUp {
   from {
     transform: translateY(100%);
@@ -207,6 +214,29 @@ main {
     opacity: 0;
   }
 }
+
+@keyframes fadeOut {
+  from {
+    transform: translateX(0); /* neutralisiert alte transform-Reste */
+    opacity: 1;
+  }
+  to {
+    transform: translateX(0); /* neutralisiert alte transform-Reste */
+    opacity: 0;
+  }
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.visible {
+  opacity: 1;
+}
+
+/* Choose Gamemode Dialog*/
+
+
 dialog.closing {
   animation: slideDown 0.6s ease forwards;
 }
@@ -230,23 +260,6 @@ form {
   height: 100%;
 }
 
-.hidden {
-  opacity: 0;
-}
-
-.visible {
-  opacity: 1;
-}
-
-#twoPlayerIcon {
-  cursor: pointer;
-  padding:40px;
-  background-color: rgba(89, 174, 253, 0.55);
-  border-radius: 50px;
-  border: 1px solid rgb(24, 24, 24); 
-  
-}
-
 #playerModeContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -258,13 +271,22 @@ form {
   row-gap: 65px;
 }
 
+#playerModeHeader {
+  color: rgb(240, 237, 237);
+  grid-column: 1/3;
+text-align: center;
+margin-top: 20px;
+font-size: 24px;
+border-bottom: 2px solid silver;
+}
+
 #TwoPlayerMode {
   grid-column: 1/2;
-  grid-template-rows: 1fr 4fr;
   display: grid;
-  height: 95%;
-  width: 95%;
+  height: 260px;
+  width: 260px;
   place-content: center;
+  position: relative;
   background-color: rgba(58, 142, 221, 0.35);
   border-radius: 50px;
   margin-left: 30px;
@@ -280,10 +302,10 @@ cursor: pointer;
 
 #OnePlayerMode {
   grid-column: 2/3;
-  grid-template-rows: 1fr 4fr;
   display: grid;
-  height: 95%;
-  width: 95%;
+  height: 260px;
+  width: 260px;
+  position: relative;
   place-content: center;
   background-color: rgba(63, 132, 196, 0.35);
   border-radius: 50px;
@@ -292,21 +314,160 @@ cursor: pointer;
 }
 #OnePlayerMode:hover {
   background-color: rgb(63, 132, 196, 0.89);
- 
   cursor: pointer;
   }
-#playerMode {
-  color: rgb(240, 237, 237);
-  grid-column: 1/3;
-text-align: center;
-margin-top: 20px;
-font-size: 24px;
-border-bottom: 2px solid silver;
+
+#twoPlayerIcon {
+  cursor: pointer;
+  padding:45px;
+  background-color: rgba(89, 174, 253, 0.55);
+  border-radius: 50px;
+  border: 1px solid rgb(24, 24, 24); 
+  
 }
-#headerPlayerMode {
+
+.headerGameModes {
+  position: absolute;
   display: grid;
   color: rgb(240, 237, 237);
-  place-items: center;
+  justify-items: center;
   font-size: 16px;
-  margin-top: 20px;
+
+}
+#headerPlayerModesOne {
+  left: 73px;
+  top: 8px;
+}
+#headerPlayerModesTwo {
+  left: 63px;
+  top: 8px;
+}
+
+/* PlayerName Dialog*/
+
+#givePlayerName {
+  
+  border-radius: 15px;
+  justify-self: center;
+  align-self: center;
+  width: 360px;
+  height: 350px;
+  background-color: rgb(33, 32, 32, 0.89);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  border: none;
+  font-family: monospace;
+  margin-top: 50px;
+  transform: translateX(-50%);
+  animation: slideUp 0.6s ease forwards;
+  color: rgb(240, 237, 237);
+}
+
+#formPlayerName {
+  display: grid;
+  row-gap: 30px;
+  grid-template-rows: 1fr 5fr 2fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+#givePlayerName.closing {
+  animation: slideDown 0.6s ease forwards;
+}
+#insertPNames {
+  text-align: center;
+  grid-column: 1/3;
+}
+#playerNameFieldset {
+  display: grid;
+  justify-self: center;
+  justify-content: center;
+  height: 170px;
+  width: 280px;
+  border-radius: 10px;
+  grid-column: 1/3;
+}
+
+#labelPlayer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 	14px;
+}
+
+#playerOneName, #playerTwoName {
+  text-align: center;
+  width: 200px;
+  height: 35px;
+}
+
+#confirmBtn {
+  grid-row: 3/4;
+  grid-column: 2/3;
+}
+#cancelBtn {
+  grid-row: 3/4;
+  grid-column: 1/2;
+}
+#confirmBtn, #cancelBtn {
+  width: 100px;
+  height: 45px;
+  justify-self: center;
+  border-radius: 10px;
+  border: 2px solid white;
+}
+
+#confirmBtn:hover, #cancelBtn:hover {
+cursor: pointer;
+background-color: black;
+color: white;
+}
+
+/* Dialog Switch Turns */
+
+
+
+#playerTurns {
+  
+  border-radius: 15px;
+  justify-self: center;
+  align-self: center;
+  width: 300px;
+  height: 250px;
+  background-color: rgb(33, 32, 32, 0.89);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  border: none;
+  font-family: monospace;
+  margin-top: 50px;
+  color: rgb(240, 237, 237);
+  transition: opacity 0.3s ease; /* Übergangsdauer 0.5s */
+}
+
+#formPlayerSwitch {
+  display: grid;
+  row-gap: 30px;
+  grid-template-rows: 2fr 1fr;
+  grid-template-columns: 1fr;
+}
+
+#changePlayers {
+  justify-self: center;
+  margin-top: 45px;
+  font-size: 20px;
+}
+#confirmPlayerSwitch {
+  grid-row: 2/3;
+  grid-column: 1/3;
+  width: 100px;
+  height: 45px;
+  justify-self: center;
+  border-radius: 10px;
+  border: 2px solid white;
+}
+
+#confirmPlayerSwitch:hover {
+cursor: pointer;
+background-color: black;
+color: white;
+}
+
+#playerTurns.opacity {
+  animation: fadeOut 0.6s ease forwards;
 }

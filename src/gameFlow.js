@@ -2,10 +2,11 @@ import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
 
-
 export function startGame() {
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
+  const bothFields = mainArea.querySelector(".bothFields");
+  bothFields.classList.remove("hidden");
   const name = "Luca";
   let player1 = new Player(name);
   player1.gameboard.buildFields();
@@ -47,6 +48,7 @@ export function startGame() {
     buildEventListenersplayers(player2, fireFieldMarks);
     refreshOwnBoard(player1);
     player1.gameboard.hideShips();
+    
   }
 
   function playerTwoTurn(
@@ -68,30 +70,35 @@ export function startGame() {
     player2.gameboard.hideShips();
   }
 
-
   function buildEventListenersplayers(player, fireFieldMarks) {
     console.log(player);
     const fieldBlockFire = fireFieldMarks.getElementsByClassName("fieldBlock");
     for (let i = 0; i < fieldBlockFire.length; i++) {
       fieldBlockFire[i].onclick = null;
       fieldBlockFire[i].onclick = () => {
-        document.body.classList.add('no-clicks');
+        document.body.classList.add("no-clicks");
         let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
         player.gameboard.receiveAttack(objectClick, fireFieldMarks);
-    
+
         // waits for two seconds to change playersTurn, so the markedField can be seen first
         setTimeout(() => {
           if (player.name === "Lotta") {
-            playerTwoTurn(clonedFieldPlayerOne, player2, clonedFieldPlayerTwoRecolor);
+            playerTwoTurn(
+              clonedFieldPlayerOne,
+              player2,
+              clonedFieldPlayerTwoRecolor
+            );
           } else {
-            playerOneTurn(clonedFieldPlayerTwo, player1, clonedFieldPlayerOneRecolor);
+            playerOneTurn(
+              clonedFieldPlayerTwo,
+              player1,
+              clonedFieldPlayerOneRecolor
+            );
           }
-          document.body.classList.remove('no-clicks');
+          document.body.classList.remove("no-clicks");
         }, 2000);
-        
-      
-    }
+      };
     }
   }
 
@@ -101,7 +108,7 @@ export function startGame() {
   }
 }
 function startDialog() {
-  const dialog = document.getElementById('createProject');
+  const dialog = document.getElementById("chooseGameMode");
   dialog.showModal(); // Öffnet den Dialog
   dialog.classList.remove("hidden");
   const startBtn = document.getElementById("TwoPlayerMode");
@@ -110,11 +117,42 @@ function startDialog() {
     dialog.classList.add("hidden");
     setTimeout(() => {
       dialog.close();
-      startGame();
-    }, 600); // 300ms = Dauer der Transition
- 
-  })
+      inputName();
+    }, 650); // 300ms = Dauer der Transition
+  });
+}
 
+function inputName() {
+  const dialog = document.getElementById("givePlayerName");
+  dialog.showModal();
+  dialog.classList.remove("hidden");
+  const confirmBtn = document.getElementById("confirmBtn");
+  confirmBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    dialog.classList.add("closing");
+    dialog.classList.add("hidden");
+    setTimeout(() => {
+      dialog.close();
+      playersTurnSwitch();
+    }, 650); // 300ms = Dauer der Transition
+  });
+}
+
+
+function playersTurnSwitch() {
+  const dialog = document.getElementById("playerTurns");
+  dialog.showModal();
+  const confirmBtn = document.getElementById("confirmPlayerSwitch");
+  confirmBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    dialog.classList.add("opacity"); // Start der opacity-Transition
+    console.log("test");
+    setTimeout(() => {
+      dialog.close();
+      startGame();
+    }, 250); // 300ms = Dauer der Transition
+   
+  });
 }
 
 startDialog();
