@@ -1,6 +1,7 @@
 import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
+let startGameDialog = true;
 
 export function startGame() {
   const mainArea = document.getElementById("mainArea");
@@ -56,6 +57,7 @@ export function startGame() {
     player2,
     clonedFieldPlayerTwoRecolor
   ) {
+    console.log("p22");
     clonedFieldPlayerTwoRecolor.classList.remove("fireArea");
     clonedFieldPlayerTwoRecolor.classList.add("fieldArea");
     clonedFieldPlayerOne.classList.remove("fieldArea");
@@ -76,28 +78,13 @@ export function startGame() {
     for (let i = 0; i < fieldBlockFire.length; i++) {
       fieldBlockFire[i].onclick = null;
       fieldBlockFire[i].onclick = () => {
-        document.body.classList.add("no-clicks");
         let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
         player.gameboard.receiveAttack(objectClick, fireFieldMarks);
-
+        
+        playersTurnSwitch(player, player1, player2, clonedFieldPlayerOne, clonedFieldPlayerTwoRecolor, clonedFieldPlayerTwo, clonedFieldPlayerOneRecolor);
         // waits for two seconds to change playersTurn, so the markedField can be seen first
-        setTimeout(() => {
-          if (player.name === "Lotta") {
-            playerTwoTurn(
-              clonedFieldPlayerOne,
-              player2,
-              clonedFieldPlayerTwoRecolor
-            );
-          } else {
-            playerOneTurn(
-              clonedFieldPlayerTwo,
-              player1,
-              clonedFieldPlayerOneRecolor
-            );
-          }
-          document.body.classList.remove("no-clicks");
-        }, 2000);
+        
       };
     }
   }
@@ -105,6 +92,39 @@ export function startGame() {
   function refreshOwnBoard(player) {
     const ownBoard = document.querySelector(".fieldArea");
     player.gameboard.markHitShips(ownBoard);
+  }
+
+  function playersTurnSwitch(player, player1, player2, clonedFieldPlayerOne, clonedFieldPlayerTwoRecolor, clonedFieldPlayerTwo, clonedFieldPlayerOneRecolor) {
+    const dialog = document.getElementById("playerTurns");
+    dialog.showModal();
+    dialog.classList.remove("hidden");
+    dialog.classList.remove("opacity");
+    const confirmBtn = document.querySelector("#confirmPlayerSwitch");
+    
+      confirmBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        dialog.classList.add("opacity"); // Start der opacity-Transition
+        console.log("test2");
+        dialog.close();
+          setTimeout(() => {
+            if (player.name === "Lotta") {
+              playerTwoTurn(
+                clonedFieldPlayerOne,
+                player2,
+                clonedFieldPlayerTwoRecolor
+              );
+            } else {
+              playerOneTurn(
+                clonedFieldPlayerTwo,
+                player1,
+                clonedFieldPlayerOneRecolor
+              );
+            }
+            
+          }, 2000);
+        
+        });
+    
   }
 }
 function startDialog() {
@@ -133,26 +153,39 @@ function inputName() {
     dialog.classList.add("hidden");
     setTimeout(() => {
       dialog.close();
-      playersTurnSwitch();
+      dialogThatCallsFirstPlayer();
     }, 650); // 300ms = Dauer der Transition
   });
 }
 
 
-function playersTurnSwitch() {
+
+
+function dialogThatCallsFirstPlayer() {
   const dialog = document.getElementById("playerTurns");
   dialog.showModal();
-  const confirmBtn = document.getElementById("confirmPlayerSwitch");
-  confirmBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    dialog.classList.add("opacity"); // Start der opacity-Transition
-    console.log("test");
-    setTimeout(() => {
-      dialog.close();
-      startGame();
-    }, 250); // 300ms = Dauer der Transition
-   
-  });
+  dialog.classList.remove("hidden");
+  dialog.classList.remove("opacity");
+  const confirmBtn = document.querySelector("#confirmPlayerSwitch"); // ID als String!
+
+  function handleConfirmClick(e) {
+  e.preventDefault();
+  const dialog = document.getElementById("playerTurns");
+
+  dialog.classList.add("opacity"); // Start der opacity-Transition
+  dialog.classList.add("hidden");
+
+  // EventListener entfernen
+  confirmBtn.removeEventListener("click", handleConfirmClick);
+
+  setTimeout(() => {
+    dialog.close();
+    startGame();
+  }, 250); // 250ms = Dauer der Transition
+
+}
+confirmBtn.addEventListener("click", handleConfirmClick);
+
 }
 
 startDialog();
