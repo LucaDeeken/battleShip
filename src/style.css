@@ -117,8 +117,16 @@ main {
   column-gap: 50px;
   row-gap: 10px;
   
-
 }
+
+.bothFields.opacity {
+  animation: fadeOut 0.6s ease forwards;
+}
+.bothFields.opacityOn {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+
 .fieldArea {
     display: grid;
     grid-column: 1/2;
@@ -223,6 +231,17 @@ main {
   to {
     transform: translateX(0); /* neutralisiert alte transform-Reste */
     opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateX(0); /* neutralisiert alte transform-Reste */
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0); /* neutralisiert alte transform-Reste */
+    opacity: 1;
   }
 }
 

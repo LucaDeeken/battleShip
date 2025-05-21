@@ -3,13 +3,14 @@ import { Ship } from "./ship.js";
 import { Player } from "./player.js";
 let startGameDialog = true;
 
-export function startGame() {
+
+export function startGame(playerNames) {
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
   bothFields.classList.remove("hidden");
   const name = "Luca";
-  let player1 = new Player(name);
+  let player1 = new Player(playerNames.playerOneName);
   player1.gameboard.buildFields();
   const savedFieldsPlaceArea = player1.gameboard.randomSpawn();
   const clonedFieldPlayerOne = savedFieldsPlaceArea.cloneNode(true);
@@ -21,7 +22,8 @@ export function startGame() {
   wholeFieldFireArea.innerHTML = "";
 
   const nameTwo = "Lotta";
-  let player2 = new Player(nameTwo);
+  let player2 = new Player(playerNames.playerTwoName);
+  console.log(playerNames);
   player2.gameboard.buildFields();
   const savedFieldsP2 = player2.gameboard.randomSpawn();
   const clonedFieldPlayerTwo = savedFieldsP2.cloneNode(true);
@@ -81,9 +83,13 @@ export function startGame() {
         let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
         player.gameboard.receiveAttack(objectClick, fireFieldMarks);
+        setTimeout(()=> {
+          const bothFields = mainArea.querySelector(".bothFields");
+          bothFields.classList.remove("opacityOn");
+          bothFields.classList.add("opacity");
+          playersTurnSwitch(player, player1, player2, clonedFieldPlayerOne, clonedFieldPlayerTwoRecolor, clonedFieldPlayerTwo, clonedFieldPlayerOneRecolor);
+        }, 2000)
         
-        playersTurnSwitch(player, player1, player2, clonedFieldPlayerOne, clonedFieldPlayerTwoRecolor, clonedFieldPlayerTwo, clonedFieldPlayerOneRecolor);
-        // waits for two seconds to change playersTurn, so the markedField can be seen first
         
       };
     }
@@ -106,7 +112,10 @@ export function startGame() {
         dialog.classList.add("opacity"); // Start der opacity-Transition
         console.log("test2");
         dialog.close();
-          setTimeout(() => {
+        const bothFields = mainArea.querySelector(".bothFields");
+        bothFields.classList.remove("opacity");
+        bothFields.classList.add("opacityOn");
+         
             if (player.name === "Lotta") {
               playerTwoTurn(
                 clonedFieldPlayerOne,
@@ -121,7 +130,6 @@ export function startGame() {
               );
             }
             
-          }, 2000);
         
         });
     
@@ -143,25 +151,34 @@ function startDialog() {
 }
 
 function inputName() {
+  let playerNames = {};
   const dialog = document.getElementById("givePlayerName");
   dialog.showModal();
   dialog.classList.remove("hidden");
   const confirmBtn = document.getElementById("confirmBtn");
   confirmBtn.addEventListener("click", (e) => {
     e.preventDefault();
+    const namePlayerOne = document.getElementById("playerOneName");
+    const namePlayerTwo = document.getElementById("playerTwoName");
+    console.log(namePlayerOne.value);
+    playerNames.playerOneName = namePlayerOne.value;
+    playerNames.playerTwoName = namePlayerTwo.value;
+    console.log(playerNames);
+
     dialog.classList.add("closing");
     dialog.classList.add("hidden");
     setTimeout(() => {
       dialog.close();
-      dialogThatCallsFirstPlayer();
+      dialogThatCallsFirstPlayer(playerNames);
     }, 650); // 300ms = Dauer der Transition
   });
+  return {playerNames}
 }
 
 
 
 
-function dialogThatCallsFirstPlayer() {
+function dialogThatCallsFirstPlayer(playerNames) {
   const dialog = document.getElementById("playerTurns");
   dialog.showModal();
   dialog.classList.remove("hidden");
@@ -180,7 +197,7 @@ function dialogThatCallsFirstPlayer() {
 
   setTimeout(() => {
     dialog.close();
-    startGame();
+    startGame(playerNames);
   }, 250); // 250ms = Dauer der Transition
 
 }
