@@ -2,7 +2,9 @@ import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
 let startGameDialog = true;
-
+let playerOneNameBoard = document.querySelector(".ownFleet");
+let playerTwoNameBoard = document.querySelector(".enemyFleet");
+let playerChangeName = document.querySelector("#changePlayers");
 
 export function startGame(playerNames) {
   const mainArea = document.getElementById("mainArea");
@@ -23,7 +25,7 @@ export function startGame(playerNames) {
 
   const nameTwo = "Lotta";
   let player2 = new Player(playerNames.playerTwoName);
-  console.log(playerNames);
+  console.log(player2);
   player2.gameboard.buildFields();
   const savedFieldsP2 = player2.gameboard.randomSpawn();
   const clonedFieldPlayerTwo = savedFieldsP2.cloneNode(true);
@@ -39,6 +41,7 @@ export function startGame(playerNames) {
     player1,
     clonedFieldPlayerOneRecolor
   ) {
+    player1.gameboard.allShipsSunk();
     clonedFieldPlayerOneRecolor.classList.remove("fieldArea");
     clonedFieldPlayerOneRecolor.classList.add("fieldArea");
     clonedFieldPlayerTwo.classList.remove("fieldArea");
@@ -51,7 +54,6 @@ export function startGame(playerNames) {
     buildEventListenersplayers(player2, fireFieldMarks);
     refreshOwnBoard(player1);
     player1.gameboard.hideShips();
-    
   }
 
   function playerTwoTurn(
@@ -60,6 +62,7 @@ export function startGame(playerNames) {
     clonedFieldPlayerTwoRecolor
   ) {
     console.log("p22");
+    player2.gameboard.allShipsSunk();
     clonedFieldPlayerTwoRecolor.classList.remove("fireArea");
     clonedFieldPlayerTwoRecolor.classList.add("fieldArea");
     clonedFieldPlayerOne.classList.remove("fieldArea");
@@ -75,22 +78,35 @@ export function startGame(playerNames) {
   }
 
   function buildEventListenersplayers(player, fireFieldMarks) {
-    console.log(player);
     const fieldBlockFire = fireFieldMarks.getElementsByClassName("fieldBlock");
+    let playersDontShift = false;
     for (let i = 0; i < fieldBlockFire.length; i++) {
       fieldBlockFire[i].onclick = null;
       fieldBlockFire[i].onclick = () => {
         let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
-        player.gameboard.receiveAttack(objectClick, fireFieldMarks);
-        setTimeout(()=> {
-          const bothFields = mainArea.querySelector(".bothFields");
-          bothFields.classList.remove("opacityOn");
-          bothFields.classList.add("opacity");
-          playersTurnSwitch(player, player1, player2, clonedFieldPlayerOne, clonedFieldPlayerTwoRecolor, clonedFieldPlayerTwo, clonedFieldPlayerOneRecolor);
-        }, 2000)
-        
-        
+        playersDontShift = player.gameboard.receiveAttack(objectClick, fireFieldMarks);
+        console.log(playersDontShift);
+        if(playersDontShift===true) {
+          //playershifting doesnt happen
+        } else {
+          document.querySelector(".bothFields").style.pointerEvents = "none";
+          setTimeout(() => {
+            const bothFields = mainArea.querySelector(".bothFields");
+            bothFields.classList.remove("opacityOn");
+            bothFields.classList.add("opacity");
+            playersTurnSwitch(
+              player,
+              player1,
+              player2,
+              clonedFieldPlayerOne,
+              clonedFieldPlayerTwoRecolor,
+              clonedFieldPlayerTwo,
+              clonedFieldPlayerOneRecolor
+            );
+          }, 2000);
+
+        }
       };
     }
   }
@@ -100,39 +116,56 @@ export function startGame(playerNames) {
     player.gameboard.markHitShips(ownBoard);
   }
 
-  function playersTurnSwitch(player, player1, player2, clonedFieldPlayerOne, clonedFieldPlayerTwoRecolor, clonedFieldPlayerTwo, clonedFieldPlayerOneRecolor) {
+  function playersTurnSwitch(
+    player,
+    player1,
+    player2,
+    clonedFieldPlayerOne,
+    clonedFieldPlayerTwoRecolor,
+    clonedFieldPlayerTwo,
+    clonedFieldPlayerOneRecolor
+  ) {
     const dialog = document.getElementById("playerTurns");
+    document.querySelector(".bothFields").style.pointerEvents = "auto";
     dialog.showModal();
     dialog.classList.remove("hidden");
     dialog.classList.remove("opacity");
+    console.log(player.name);
+    if (player.name === player2.name) {
+      playerChangeName.textContent =
+        "It's " + playerNames.playerTwoName + "'s turn!";
+    } else {
+      playerChangeName.textContent =
+        "It's " + playerNames.playerOneName + "'s turn!";
+    }
+
     const confirmBtn = document.querySelector("#confirmPlayerSwitch");
-    
-      confirmBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        dialog.classList.add("opacity"); // Start der opacity-Transition
-        console.log("test2");
-        dialog.close();
-        const bothFields = mainArea.querySelector(".bothFields");
-        bothFields.classList.remove("opacity");
-        bothFields.classList.add("opacityOn");
-         
-            if (player.name === "Lotta") {
-              playerTwoTurn(
-                clonedFieldPlayerOne,
-                player2,
-                clonedFieldPlayerTwoRecolor
-              );
-            } else {
-              playerOneTurn(
-                clonedFieldPlayerTwo,
-                player1,
-                clonedFieldPlayerOneRecolor
-              );
-            }
-            
-        
-        });
-    
+    confirmBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      dialog.classList.add("opacity"); // Start der opacity-Transition
+      dialog.close();
+      const bothFields = mainArea.querySelector(".bothFields");
+      bothFields.classList.remove("opacity");
+      bothFields.classList.add("opacityOn");
+
+      if (player.name === player2.name) {
+        playerOneNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
+        playerTwoNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
+        playerTwoTurn(
+          clonedFieldPlayerOne,
+          player2,
+          clonedFieldPlayerTwoRecolor
+        );
+      } else {
+        playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
+        playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
+        playerOneTurn(
+          clonedFieldPlayerTwo,
+          player1,
+          clonedFieldPlayerOneRecolor
+        );
+      }
+    });
   }
 }
 function startDialog() {
@@ -160,11 +193,10 @@ function inputName() {
     e.preventDefault();
     const namePlayerOne = document.getElementById("playerOneName");
     const namePlayerTwo = document.getElementById("playerTwoName");
-    console.log(namePlayerOne.value);
     playerNames.playerOneName = namePlayerOne.value;
     playerNames.playerTwoName = namePlayerTwo.value;
-    console.log(playerNames);
-
+    playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
+    playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
     dialog.classList.add("closing");
     dialog.classList.add("hidden");
     setTimeout(() => {
@@ -172,37 +204,34 @@ function inputName() {
       dialogThatCallsFirstPlayer(playerNames);
     }, 650); // 300ms = Dauer der Transition
   });
-  return {playerNames}
+  return { playerNames };
 }
-
-
-
 
 function dialogThatCallsFirstPlayer(playerNames) {
   const dialog = document.getElementById("playerTurns");
   dialog.showModal();
   dialog.classList.remove("hidden");
   dialog.classList.remove("opacity");
-  const confirmBtn = document.querySelector("#confirmPlayerSwitch"); // ID als String!
+  const confirmBtn = document.querySelector("#confirmPlayerSwitch");
+  playerChangeName.textContent =
+    "It's " + playerNames.playerOneName + "'s turn!";
 
   function handleConfirmClick(e) {
-  e.preventDefault();
-  const dialog = document.getElementById("playerTurns");
+    e.preventDefault();
+    const dialog = document.getElementById("playerTurns");
 
-  dialog.classList.add("opacity"); // Start der opacity-Transition
-  dialog.classList.add("hidden");
+    dialog.classList.add("opacity"); // Start der opacity-Transition
+    dialog.classList.add("hidden");
 
-  // EventListener entfernen
-  confirmBtn.removeEventListener("click", handleConfirmClick);
+    // EventListener entfernen
+    confirmBtn.removeEventListener("click", handleConfirmClick);
 
-  setTimeout(() => {
-    dialog.close();
-    startGame(playerNames);
-  }, 250); // 250ms = Dauer der Transition
-
-}
-confirmBtn.addEventListener("click", handleConfirmClick);
-
+    setTimeout(() => {
+      dialog.close();
+      startGame(playerNames);
+    }, 250); // 250ms = Dauer der Transition
+  }
+  confirmBtn.addEventListener("click", handleConfirmClick);
 }
 
 startDialog();

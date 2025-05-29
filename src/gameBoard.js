@@ -45,8 +45,15 @@ export class Gameboard {
   receiveAttack(gridObject, gameboard) {
     if (gridObject.hit === false) {
       gridObject.hit = true;
+      console.log(gridObject);
       this.markHitShips(gameboard);
+      if ((gridObject.ship === true) && (gridObject.hit===true)) {
+        return true
+      }
+    } else {
+      return true
     }
+    return false;
   }
 
   findObjectFromGrid(dataIndex) {
@@ -289,19 +296,16 @@ export class Gameboard {
       this.placeBoard[i].forEach((item) => {
         if (item.ship && item.hit === true) {
           let firstNum = item.index[0];
-          console.log(firstNum);
           if (firstNum === "0") {
             element = gameBoard.querySelector(
               `[data-index="${item.index[1]}"]`
             );
             element.textContent = "💥";
             element.classList.add("hitEmoji");
-            console.log(element);
           } else {
             element = gameBoard.querySelector(`[data-index="${item.index}"]`);
             element.textContent = "💥";
             element.classList.add("hitEmoji");
-            console.log(element);
           }
         }
         if (item.ship === null && item.hit === true) {
@@ -319,6 +323,22 @@ export class Gameboard {
           }
         }
       });
+    }
+  }
+
+  allShipsSunk() {
+    let shipStillThere = false;
+    for (let i = 0; i < this.placeBoard.length; i++) {
+      this.placeBoard[i].forEach((item) => {
+        if (item.ship && item.hit === false) {
+          shipStillThere = true;
+        }
+      })
+    }
+    if(shipStillThere===false) {
+      console.log("GAMEOVER");
+    } else {
+      console.log("shipsStillThere");
     }
   }
 }
