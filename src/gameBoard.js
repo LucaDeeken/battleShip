@@ -10,6 +10,7 @@ export class Gameboard {
           coordinate: j,
           hit: false,
           ship: null,
+          shipDetails: null,
           index: `${i}${j}`,
         };
         leftArray.push(cords);
@@ -48,6 +49,7 @@ export class Gameboard {
       console.log(gridObject);
       this.markHitShips(gameboard);
       if ((gridObject.ship === true) && (gridObject.hit===true)) {
+        gridObject.shipDetails.hit();
         return true
       }
     } else {
@@ -117,6 +119,7 @@ export class Gameboard {
             return sailingShip();
           }
           startingObject.ship = true;
+          startingObject.shipDetails = this.ships[key];
           this.firstIter = false;
           left = false;
           up = false;
@@ -168,6 +171,7 @@ export class Gameboard {
           startingObject = this.findObjectFromGrid(spawnLocation);
           this.arrayOfShips.push(startingObject);
           startingObject.ship = true;
+          startingObject.shipDetails = this.ships[key];
         }
         for (let i = 0; i < lengthOfShip - 2; i++) {
           startingObject = 0;
@@ -210,6 +214,7 @@ export class Gameboard {
           startingObject = this.findObjectFromGrid(spawnLocation);
           this.arrayOfShips.push(startingObject);
           startingObject.ship = true;
+          startingObject.shipDetails = this.ships[key];
         }
       };
 
@@ -223,7 +228,7 @@ export class Gameboard {
   }
 
   resetPlacementProcess() {
-    this.arrayOfShips.forEach((item) => (item.ship = null));
+    this.arrayOfShips.forEach((item) => (item.ship = null, item.shipDetails = null));
     this.arrayOfShips = [];
     this.firstIter = true;
     this.secondIter = true;
@@ -295,6 +300,7 @@ export class Gameboard {
     for (let i = 0; i < this.placeBoard.length; i++) {
       this.placeBoard[i].forEach((item) => {
         if (item.ship && item.hit === true) {
+          console.log(this.placeBoard[i]);
           let firstNum = item.index[0];
           if (firstNum === "0") {
             element = gameBoard.querySelector(
@@ -341,4 +347,5 @@ export class Gameboard {
       console.log("shipsStillThere");
     }
   }
+
 }

@@ -1,6 +1,12 @@
 import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
+import soundFile from "./sounds/water-splash.mp3";
+import soundFileTwo from "./sounds/hit.mp3";
+const audio = new Audio(soundFile);
+const audioTwo = new Audio(soundFileTwo);
+
+
 let startGameDialog = true;
 let playerOneNameBoard = document.querySelector(".ownFleet");
 let playerTwoNameBoard = document.querySelector(".enemyFleet");
@@ -62,7 +68,6 @@ export function startGame(playerNames) {
     clonedFieldPlayerTwoRecolor
   ) {
     console.log("p22");
-    player2.gameboard.allShipsSunk();
     clonedFieldPlayerTwoRecolor.classList.remove("fireArea");
     clonedFieldPlayerTwoRecolor.classList.add("fieldArea");
     clonedFieldPlayerOne.classList.remove("fieldArea");
@@ -86,10 +91,13 @@ export function startGame(playerNames) {
         let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
         playersDontShift = player.gameboard.receiveAttack(objectClick, fireFieldMarks);
+        player.gameboard.allShipsSunk();
         console.log(playersDontShift);
         if(playersDontShift===true) {
           //playershifting doesnt happen
+          playSoundHit();
         } else {
+          playSoundWaterSplash();
           document.querySelector(".bothFields").style.pointerEvents = "none";
           setTimeout(() => {
             const bothFields = mainArea.querySelector(".bothFields");
@@ -104,13 +112,11 @@ export function startGame(playerNames) {
               clonedFieldPlayerTwo,
               clonedFieldPlayerOneRecolor
             );
-          }, 2000);
-
+          }, 1500);
         }
       };
     }
   }
-
   function refreshOwnBoard(player) {
     const ownBoard = document.querySelector(".fieldArea");
     player.gameboard.markHitShips(ownBoard);
@@ -140,14 +146,15 @@ export function startGame(playerNames) {
     }
 
     const confirmBtn = document.querySelector("#confirmPlayerSwitch");
-    confirmBtn.addEventListener("click", (e) => {
-      e.preventDefault();
+    confirmBtn.onclick = null;
+    confirmBtn.onclick = () => {
+      
       dialog.classList.add("opacity"); // Start der opacity-Transition
       dialog.close();
       const bothFields = mainArea.querySelector(".bothFields");
       bothFields.classList.remove("opacity");
       bothFields.classList.add("opacityOn");
-
+      console.log(player1);
       if (player.name === player2.name) {
         playerOneNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
         playerTwoNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
@@ -165,7 +172,7 @@ export function startGame(playerNames) {
           clonedFieldPlayerOneRecolor
         );
       }
-    });
+    }
   }
 }
 function startDialog() {
@@ -234,4 +241,15 @@ function dialogThatCallsFirstPlayer(playerNames) {
   confirmBtn.addEventListener("click", handleConfirmClick);
 }
 
+
+function playSoundWaterSplash() {
+  audio.currentTime = 0;
+  audio.play();
+}
+
+function playSoundHit() {
+  audioTwo.currentTime = 0;
+  audioTwo.play();
+}
+ 
 startDialog();
