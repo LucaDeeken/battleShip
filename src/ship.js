@@ -5,6 +5,7 @@ export class Ship {
     this.sunk = false;
     this.position = 0;
     this.shipName = this.getShipname(this.length);
+    this.onSunkList = false;
   }
 
   hit() {

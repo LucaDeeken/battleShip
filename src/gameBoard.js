@@ -332,6 +332,17 @@ export class Gameboard {
     }
   }
 
+  shipSunk() {
+    const shipList = Object.values(this.ships);
+    for(let item of shipList) {
+      if ((item.sunk === true) && (item.onSunkList === false)) {
+        console.log(item.shipName + "just Sunk!");
+        item.onSunkList=true;
+      }
+    }
+    console.log(shipList);
+  }
+
   allShipsSunk() {
     let shipStillThere = false;
     for (let i = 0; i < this.placeBoard.length; i++) {

@@ -47,7 +47,9 @@ export function startGame(playerNames) {
     player1,
     clonedFieldPlayerOneRecolor
   ) {
+    console.log("HALLO");
     player1.gameboard.allShipsSunk();
+    player1.gameboard.shipSunk();
     clonedFieldPlayerOneRecolor.classList.remove("fieldArea");
     clonedFieldPlayerOneRecolor.classList.add("fieldArea");
     clonedFieldPlayerTwo.classList.remove("fieldArea");
@@ -67,7 +69,8 @@ export function startGame(playerNames) {
     player2,
     clonedFieldPlayerTwoRecolor
   ) {
-    console.log("p22");
+    player2.gameboard.allShipsSunk();
+    player2.gameboard.shipSunk();
     clonedFieldPlayerTwoRecolor.classList.remove("fireArea");
     clonedFieldPlayerTwoRecolor.classList.add("fieldArea");
     clonedFieldPlayerOne.classList.remove("fieldArea");
@@ -96,6 +99,8 @@ export function startGame(playerNames) {
         if(playersDontShift===true) {
           //playershifting doesnt happen
           playSoundHit();
+          player.gameboard.allShipsSunk();
+          player.gameboard.shipSunk();
         } else {
           playSoundWaterSplash();
           document.querySelector(".bothFields").style.pointerEvents = "none";
