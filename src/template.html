@@ -57,6 +57,13 @@
     </Form>
    </dialog>
 
+       <dialog id="ShipSunkDialog" class="hidden" aria-labelledby="ShipSunkDialog">
+      <Form method="dialog">
+        <h2 id="shipSunkHeader"></h2>
+        <button id="confirmBtnShip" value="default" >Confirm</button>
+      </Form>
+     </dialog>
+
     <main id="mainArea" class="hidden">
         <div class="bothFields hidden">
           <h2 class="ownFleet">Own Fleet</h2>
@@ -68,8 +75,8 @@
 
     <dialog id="WinnersDialog" class="hidden" aria-labelledby="WinnersDialog">
       <Form id="formWinnersDialog"method="dialog">
-        <h2 id="formWinnersDialog">It's Player 1's turn!</h2>
-        <button id="playAgain" value="default" >Confirm</button>
+        <h2 id="formWinnersDialog"></h2>
+        <button id="confirmBtn" value="default" >Confirm</button>
       </Form>
      </dialog>
   </body>

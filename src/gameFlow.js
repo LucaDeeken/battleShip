@@ -1,6 +1,7 @@
 import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
+import {showDialogShipSunk} from "./DOMmanipulation.js";
 import soundFile from "./sounds/water-splash.mp3";
 import soundFileTwo from "./sounds/hit.mp3";
 const audio = new Audio(soundFile);
@@ -100,7 +101,11 @@ export function startGame(playerNames) {
           //playershifting doesnt happen
           playSoundHit();
           player.gameboard.allShipsSunk();
-          player.gameboard.shipSunk();
+          const shipSunkName = player.gameboard.shipSunk();
+          console.log(shipSunkName);
+          if (shipSunkName!==false) {
+            showDialogShipSunk(shipSunkName);
+          }
         } else {
           playSoundWaterSplash();
           document.querySelector(".bothFields").style.pointerEvents = "none";
