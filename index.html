@@ -6,6 +6,7 @@
     <title>Battle-Ship!</title>
   <script defer src="main.js"></script></head>
   <body>
+   
     <div id="bannerContainer">
       <h1 id="bannerContainer">    
         
@@ -41,7 +42,7 @@
       <fieldset id="playerNameFieldset">
         <label id="labelPlayer"for="playerOneName">Player One:</label>
         <input type="text" id="playerOneName" placeholder="Type Name Here">
-        <label id="labelPlayer" for="playerTwoName">Player One:</label>
+        <label id="labelPlayer" for="playerTwoName">Player Two:</label>
         <input type="text" id="playerTwoName" placeholder="Type Name Here">
       </fieldset>
       <button id="confirmBtn" value="default" >Confirm</button>
@@ -56,6 +57,13 @@
     </Form>
    </dialog>
 
+       <dialog id="ShipSunkDialog" class="hidden" aria-labelledby="ShipSunkDialog">
+      <Form method="dialog">
+        <h2 id="shipSunkHeader"></h2>
+        <button id="confirmBtnShip" value="default" >Confirm</button>
+      </Form>
+     </dialog>
+
     <main id="mainArea" class="hidden">
         <div class="bothFields hidden">
           <h2 class="ownFleet">Own Fleet</h2>
@@ -64,5 +72,13 @@
         <div class="fireArea"></div>
       </div>
     </main>
+
+    <dialog id="WinnersDialog" class="hidden" aria-labelledby="WinnersDialog">
+      <Form method="dialog">
+        <h2 id="headerWinnersDialog"></h2>
+        <img src="2fc3bd65c6ad310a6f82.png" alt="" height="180px" width="auto" id="winnerIcon">
+        <button id="confirmBtnWin" value="default" >Play again!</button>
+      </Form>
+     </dialog>
   </body>
 </html>
