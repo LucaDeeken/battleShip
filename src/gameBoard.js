@@ -1,4 +1,6 @@
 import { Ship } from "./ship.js";
+import { player1, player2} from "./gameFlow.js";
+import { gameOverDialog } from "./DOMmanipulation.js";
 
 export class Gameboard {
   constructor() {
@@ -72,6 +74,10 @@ export class Gameboard {
   buildFields() {
     const fieldArea = document.querySelector(".fieldArea");
     const fireArea = document.querySelector(".fireArea");
+
+    fieldArea.innerHTML = "";
+    fireArea.innerHTML = "";
+
     for (let i = 0; i < 100; i++) {
       const fieldBlock = document.createElement("div");
       fieldBlock.classList.add("fieldBlock");
@@ -335,7 +341,6 @@ export class Gameboard {
   shipSunk() {
     const shipList = Object.values(this.ships);
     for(let item of shipList) {
-      console.log(item);
       if ((item.sunk === true) && (item.onSunkList === false)) {
         console.log(item.shipName + "just Sunk!");
         item.onSunkList=true;
@@ -345,7 +350,7 @@ export class Gameboard {
     return false;
   }
 
-  allShipsSunk() {
+  allShipsSunk(player) {
     let shipStillThere = false;
     for (let i = 0; i < this.placeBoard.length; i++) {
       this.placeBoard[i].forEach((item) => {
@@ -355,10 +360,13 @@ export class Gameboard {
       })
     }
     if(shipStillThere===false) {
-      console.log("GAMEOVER");
+                  if(player.name===player1.name) {
+                  gameOverDialog(player2);
+                } else {
+                  gameOverDialog(player1);
+                }
     } else {
-      console.log("shipsStillThere");
+      //ships are still there!
     }
   }
-
 }

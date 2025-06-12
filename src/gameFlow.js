@@ -13,13 +13,15 @@ let playerOneNameBoard = document.querySelector(".ownFleet");
 let playerTwoNameBoard = document.querySelector(".enemyFleet");
 let playerChangeName = document.querySelector("#changePlayers");
 
+let player1 = null;
+let player2 = null;
+
 export function startGame(playerNames) {
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
   bothFields.classList.remove("hidden");
-  const name = "Luca";
-  let player1 = new Player(playerNames.playerOneName);
+  player1 = new Player(playerNames.playerOneName);
   player1.gameboard.buildFields();
   const savedFieldsPlaceArea = player1.gameboard.randomSpawn();
   const clonedFieldPlayerOne = savedFieldsPlaceArea.cloneNode(true);
@@ -31,7 +33,7 @@ export function startGame(playerNames) {
   wholeFieldFireArea.innerHTML = "";
 
   const nameTwo = "Lotta";
-  let player2 = new Player(playerNames.playerTwoName);
+  player2 = new Player(playerNames.playerTwoName);
   console.log(player2);
   player2.gameboard.buildFields();
   const savedFieldsP2 = player2.gameboard.randomSpawn();
@@ -48,9 +50,7 @@ export function startGame(playerNames) {
     player1,
     clonedFieldPlayerOneRecolor
   ) {
-    console.log("HALLO");
-    player1.gameboard.allShipsSunk();
-    player1.gameboard.shipSunk();
+
     clonedFieldPlayerOneRecolor.classList.remove("fieldArea");
     clonedFieldPlayerOneRecolor.classList.add("fieldArea");
     clonedFieldPlayerTwo.classList.remove("fieldArea");
@@ -70,8 +70,6 @@ export function startGame(playerNames) {
     player2,
     clonedFieldPlayerTwoRecolor
   ) {
-    player2.gameboard.allShipsSunk();
-    player2.gameboard.shipSunk();
     clonedFieldPlayerTwoRecolor.classList.remove("fireArea");
     clonedFieldPlayerTwoRecolor.classList.add("fieldArea");
     clonedFieldPlayerOne.classList.remove("fieldArea");
@@ -95,16 +93,15 @@ export function startGame(playerNames) {
         let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
         playersDontShift = player.gameboard.receiveAttack(objectClick, fireFieldMarks);
-        player.gameboard.allShipsSunk();
         console.log(playersDontShift);
         if(playersDontShift===true) {
           //playershifting doesnt happen
           playSoundHit();
-          player.gameboard.allShipsSunk();
           const shipSunkName = player.gameboard.shipSunk();
-          console.log(shipSunkName);
-          if (shipSunkName!==false) {
-            showDialogShipSunk(shipSunkName);
+
+          if (shipSunkName!==false) {       
+            showDialogShipSunk(shipSunkName,player);
+           
           }
         } else {
           playSoundWaterSplash();
@@ -263,3 +260,5 @@ function playSoundHit() {
 }
  
 startDialog();
+
+export { player1, player2};

@@ -247,6 +247,17 @@ main {
   }
 }
 
+@keyframes scaleBig {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 .hidden {
   opacity: 0;
 }
@@ -451,7 +462,7 @@ color: white;
   justify-self: center;
   align-self: center;
   width: 330px;
-  height: 170px;
+  height: 165px;
   background-color: rgb(33, 32, 32, 0.89);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
   border: none;
@@ -526,6 +537,46 @@ color: white;
 }
 
 #confirmBtnShip:hover {
+cursor: pointer;
+background-color: black;
+color: white;
+}
+
+/* Dialog Winner */
+
+#WinnersDialog {
+  border-radius: 15px;
+  justify-self: center;
+  align-self: center;
+  width: 360px;
+  height: 330px;
+  background-color: rgb(33, 32, 32, 0.89);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  border: none;
+  font-family: monospace;
+  margin-top: 50px;
+  color: rgb(240, 237, 237);
+  transition: opacity 0.3s ease; /* Übergangsdauer 0.5s */
+}
+
+#headerWinnersDialog {
+  padding-top: 10px;
+  font-size: 30px;
+  text-align: center;
+}
+#confirmBtnWin {
+  width: 100px;
+  height: 45px;
+  border-radius: 10px;
+  border: 2px solid white;
+  margin-left: 115px;
+}
+
+#winnerIcon {
+  justify-self: center;
+}
+
+#confirmBtnWin:hover {
 cursor: pointer;
 background-color: black;
 color: white;
