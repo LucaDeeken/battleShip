@@ -1,7 +1,7 @@
 import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
-import {showDialogShipSunk} from "./DOMmanipulation.js";
+import {inputName, showDialogShipSunk } from "./DOMmanipulation.js";
 import soundFile from "./sounds/water-splash.mp3";
 import soundFileTwo from "./sounds/hit.mp3";
 const audio = new Audio(soundFile);
@@ -9,6 +9,8 @@ const audioTwo = new Audio(soundFileTwo);
 
 
 let startGameDialog = true;
+
+let playerNames = {};
 let playerOneNameBoard = document.querySelector(".ownFleet");
 let playerTwoNameBoard = document.querySelector(".enemyFleet");
 let playerChangeName = document.querySelector("#changePlayers");
@@ -21,7 +23,7 @@ export function startGame(playerNames) {
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
   bothFields.classList.remove("hidden");
-  player1 = new Player(playerNames.playerOneName);
+
   player1.gameboard.buildFields();
   const savedFieldsPlaceArea = player1.gameboard.randomSpawn();
   const clonedFieldPlayerOne = savedFieldsPlaceArea.cloneNode(true);
@@ -32,9 +34,7 @@ export function startGame(playerNames) {
   wholeFieldPlaceArea.innerHTML = "";
   wholeFieldFireArea.innerHTML = "";
 
-  const nameTwo = "Lotta";
-  player2 = new Player(playerNames.playerTwoName);
-  console.log(player2);
+  
   player2.gameboard.buildFields();
   const savedFieldsP2 = player2.gameboard.randomSpawn();
   const clonedFieldPlayerTwo = savedFieldsP2.cloneNode(true);
@@ -181,6 +181,7 @@ export function startGame(playerNames) {
       }
     }
   }
+
 }
 function startDialog() {
   const dialog = document.getElementById("chooseGameMode");
@@ -197,31 +198,24 @@ function startDialog() {
   });
 }
 
-function inputName() {
-  let playerNames = {};
-  const dialog = document.getElementById("givePlayerName");
-  dialog.showModal();
-  dialog.classList.remove("hidden");
-  const confirmBtn = document.getElementById("confirmBtn");
-  confirmBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    const namePlayerOne = document.getElementById("playerOneName");
-    const namePlayerTwo = document.getElementById("playerTwoName");
-    playerNames.playerOneName = namePlayerOne.value;
-    playerNames.playerTwoName = namePlayerTwo.value;
-    playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
-    playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
-    dialog.classList.add("closing");
-    dialog.classList.add("hidden");
-    setTimeout(() => {
-      dialog.close();
-      dialogThatCallsFirstPlayer(playerNames);
-    }, 650); // 300ms = Dauer der Transition
-  });
-  return { playerNames };
+export function createPlayers(playerNames) {
+  const namePlayerOne = document.getElementById("playerOneName");
+  const namePlayerTwo = document.getElementById("playerTwoName");
+  playerNames.playerOneName = namePlayerOne.value;
+  playerNames.playerTwoName = namePlayerTwo.value;
+  player1 = new Player(playerNames.playerOneName);
+  player2 = new Player(playerNames.playerTwoName);
+  playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
+  playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
+  return { player1, player2, playerNames, playerOneNameBoard, playerTwoNameBoard};
 }
 
-function dialogThatCallsFirstPlayer(playerNames) {
+ export function placeShips(player) {
+    player.gameboard.ownPlacementPhase();
+    playerOneNameBoard.textContent = player.name + "'s Ocean";
+    playerTwoNameBoard.textContent = player.name +"'s Ship Hangar";
+  }
+export function dialogThatCallsFirstPlayer(playerNames) {
   const dialog = document.getElementById("playerTurns");
   dialog.showModal();
   dialog.classList.remove("hidden");
@@ -261,4 +255,4 @@ function playSoundHit() {
  
 startDialog();
 
-export { player1, player2};
+export { player1, player2, playerNames};

@@ -33,11 +33,11 @@ export class Gameboard {
       this.fireBoard.push(leftArray);
     }
     this.ships = {
-      verySmall: new Ship(2),
-      massive: new Ship(5),
-      small: new Ship(3),
-      smallTwo: new Ship(3),
-      medium: new Ship(4),
+      verySmall: new Ship(2, "Destroyer", "#FF1493"),
+      small: new Ship(3, "Cruiser", "#D75B3E"),
+      smallTwo: new Ship(3, "Submarine", "#FFD700"),
+      medium: new Ship(4, "Battleship", "#6B8E23"),
+      massive: new Ship(5, "Carrier", "#00CFFF"),
     };
     this.arrayOfShips = [];
     this.firstIter = true;
@@ -102,6 +102,21 @@ export class Gameboard {
     }
   }
 
+  ownPlacementPhase() {
+    const fieldArea = document.querySelector(".fieldArea");
+    for (let i = 0; i < 100; i++) {
+      const fieldBlock = document.createElement("div");
+      fieldBlock.classList.add("fieldBlock");
+      fieldBlock.dataset.index = i;
+      fieldArea.appendChild(fieldBlock);
+      const dataIndex = fieldBlock.dataset.index;
+      fieldBlock.addEventListener("click", () => {
+        let objectClick = this.findObjectFromGrid(dataIndex);
+        console.log(objectClick);
+      });
+    }
+  }
+  
   randomSpawn() {
     const movements = [-1, 1, 10, -10];
     let startingObject = 0;

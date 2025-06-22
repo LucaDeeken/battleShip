@@ -26,11 +26,11 @@
            <h2 id="playerModeHeader">Who Do You Want to Play Against?</h2>
            <div id="TwoPlayerMode">
              <h3 class="headerGameModes"id="headerPlayerModesOne">Versus Friend</h2>
-             <img src="./images/twoPlayer.png" alt="" aria-label="Start Two-Player-Mode" height="180px" width="auto" id="twoPlayerIcon">
+             <img src="./images/twoPlayer.png" alt="" aria-label="Start Two-Player-Mode" id="twoPlayerIcon">
            </div>
            <div id="OnePlayerMode">
              <h3 class="headerGameModes"id="headerPlayerModesTwo">Versus Computer</h2>
-             <img src="./images/robot.png" alt="" aria-label="Start Single-Player-Mode" height="180px" width="auto" id="twoPlayerIcon"> 
+             <img src="./images/robot.png" alt="" aria-label="Start Single-Player-Mode" id="twoPlayerIcon"> 
            </div>
          </div>
        </form>
@@ -48,6 +48,22 @@
       <button id="confirmBtn" value="default" >Confirm</button>
       <button id="cancelBtn" value="cancel" type="reset" formmethod="dialog">Return</button>
     </Form>
+   </dialog>
+
+   <dialog id="chosePlaceMode" class="hidden">
+      <form method="dialog">
+         <div id="choseModeContainer">
+           <h2 id="choseModeHeader">How do you want to have your ships placed?</h2>
+           <div id="choseOwnPlacement">
+             <h3 class="choseHeaderGameModes"id="choseHeaderPlayerModesOne">Own Placement</h2>
+             <img src="./images/circle.png" alt="" aria-label="Start Two-Player-Mode" id="choseTwoPlayerIcon">
+           </div>
+           <div id="choseRandomPlacement">
+             <h3 class="choseHeaderGameModes"id="choseHeaderPlayerModesTwo">Random Placement</h2>
+             <img src="./images/questionMark.png" alt="" aria-label="Start Single-Player-Mode" id="choseTwoPlayerIcon"> 
+           </div>
+         </div>
+       </form>
    </dialog>
 
    <dialog id="playerTurns" class="hidden" aria-labelledby="playerTurns">
@@ -69,7 +85,10 @@
           <h2 class="ownFleet">Own Fleet</h2>
         <div class="fieldArea"></div>
         <h2 class="enemyFleet">Enemy Fleet</h2>
-        <div class="fireArea"></div>
+        <div class="fireArea">
+          <div id="shipHangar" class="hidden">
+          </div>
+        </div>
       </div>
     </main>
 
