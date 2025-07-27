@@ -25,11 +25,11 @@
          <div id="playerModeContainer">
            <h2 id="playerModeHeader">Who Do You Want to Play Against?</h2>
            <div id="TwoPlayerMode">
-             <h3 class="headerGameModes"id="headerPlayerModesOne">Versus Friend</h2>
+             <h3 class="headerGameModes"id="headerPlayerModesOne">Versus Friend</h3>
              <img src="./images/twoPlayer.png" alt="" aria-label="Start Two-Player-Mode" id="twoPlayerIcon">
            </div>
            <div id="OnePlayerMode">
-             <h3 class="headerGameModes"id="headerPlayerModesTwo">Versus Computer</h2>
+             <h3 class="headerGameModes"id="headerPlayerModesTwo">Versus Computer</h3>
              <img src="./images/robot.png" alt="" aria-label="Start Single-Player-Mode" id="twoPlayerIcon"> 
            </div>
          </div>
@@ -81,15 +81,18 @@
      </dialog>
 
     <main id="mainArea" class="hidden">
-        <div class="bothFields hidden">
-          <h2 class="ownFleet">Own Fleet</h2>
+      <div class="bothFields hidden">
+        <h2 class="ownFleet">Own Fleet</h2>
         <div class="fieldArea"></div>
         <h2 class="enemyFleet">Enemy Fleet</h2>
-        <div class="fireArea">
+        <div class="fireAreaHangar">
+          <img src="./images/rotate.png" alt="" aria-label="Start Two-Player-Mode" id="rotateHangar">
           <div id="shipHangar" class="hidden">
-          </div>
+        </div>
         </div>
       </div>
+      <button id="confirmPlacementBtn" value="default" >Confirm</button>
+      <button id="resetPlacementBtn" value="default" >Reset</button>
     </main>
 
     <dialog id="WinnersDialog" class="hidden" aria-labelledby="WinnersDialog">

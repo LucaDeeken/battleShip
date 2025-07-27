@@ -1,12 +1,11 @@
 import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
-import {inputName, showDialogShipSunk } from "./DOMmanipulation.js";
+import { inputName, showDialogShipSunk, randomSpawn } from "./DOMmanipulation.js";
 import soundFile from "./sounds/water-splash.mp3";
 import soundFileTwo from "./sounds/hit.mp3";
 const audio = new Audio(soundFile);
 const audioTwo = new Audio(soundFileTwo);
-
 
 let startGameDialog = true;
 
@@ -18,25 +17,46 @@ let playerChangeName = document.querySelector("#changePlayers");
 let player1 = null;
 let player2 = null;
 
-export function startGame(playerNames) {
+export function startGame(playerNames, kindOfSpawn) {
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
   bothFields.classList.remove("hidden");
 
+  playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
+  playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
+
+  let wholeFieldFireArea = document.querySelector(".fireAreaHangar");
+  wholeFieldFireArea.classList.add("fireArea");
+  wholeFieldFireArea.classList.remove("fireAreaHangar");
+
+  console.log(player1);
+  console.log(player2);
   player1.gameboard.buildFields();
-  const savedFieldsPlaceArea = player1.gameboard.randomSpawn();
+  let savedFieldsPlaceArea;
+  let savedFieldsP2;
+  if(kindOfSpawn===true) {
+     savedFieldsPlaceArea = player1.gameboard.randomSpawn();
+    console.log("geht rein");
+  } else {
+    savedFieldsPlaceArea = player1.gameboard.getOwnPlacementsIntoStartingGame();
+  }
+  
   const clonedFieldPlayerOne = savedFieldsPlaceArea.cloneNode(true);
+  console.log(clonedFieldPlayerOne);
   const clonedFieldPlayerOneRecolor = savedFieldsPlaceArea.cloneNode(true);
 
   let wholeFieldPlaceArea = document.querySelector(".fieldArea");
-  let wholeFieldFireArea = document.querySelector(".fireArea");
+  wholeFieldFireArea = document.querySelector(".fireArea");
   wholeFieldPlaceArea.innerHTML = "";
   wholeFieldFireArea.innerHTML = "";
 
-  
   player2.gameboard.buildFields();
-  const savedFieldsP2 = player2.gameboard.randomSpawn();
+    if(kindOfSpawn===true) {
+    savedFieldsP2 = player2.gameboard.randomSpawn();
+  } else {
+    savedFieldsP2 = player2.gameboard.getOwnPlacementsIntoStartingGame();
+  }
   const clonedFieldPlayerTwo = savedFieldsP2.cloneNode(true);
   const clonedFieldPlayerTwoRecolor = savedFieldsP2.cloneNode(true);
 
@@ -48,9 +68,8 @@ export function startGame(playerNames) {
   function playerOneTurn(
     clonedFieldPlayerTwo,
     player1,
-    clonedFieldPlayerOneRecolor
+    clonedFieldPlayerOneRecolor,
   ) {
-
     clonedFieldPlayerOneRecolor.classList.remove("fieldArea");
     clonedFieldPlayerOneRecolor.classList.add("fieldArea");
     clonedFieldPlayerTwo.classList.remove("fieldArea");
@@ -63,12 +82,13 @@ export function startGame(playerNames) {
     buildEventListenersplayers(player2, fireFieldMarks);
     refreshOwnBoard(player1);
     player1.gameboard.hideShips();
+    console.log(player1);
   }
 
   function playerTwoTurn(
     clonedFieldPlayerOne,
     player2,
-    clonedFieldPlayerTwoRecolor
+    clonedFieldPlayerTwoRecolor,
   ) {
     clonedFieldPlayerTwoRecolor.classList.remove("fireArea");
     clonedFieldPlayerTwoRecolor.classList.add("fieldArea");
@@ -92,16 +112,18 @@ export function startGame(playerNames) {
       fieldBlockFire[i].onclick = () => {
         let dataIndex = fieldBlockFire[i].dataset.index;
         let objectClick = player.gameboard.findObjectFromGrid(dataIndex);
-        playersDontShift = player.gameboard.receiveAttack(objectClick, fireFieldMarks);
+        playersDontShift = player.gameboard.receiveAttack(
+          objectClick,
+          fireFieldMarks,
+        );
         console.log(playersDontShift);
-        if(playersDontShift===true) {
+        if (playersDontShift === true) {
           //playershifting doesnt happen
           playSoundHit();
           const shipSunkName = player.gameboard.shipSunk();
 
-          if (shipSunkName!==false) {       
-            showDialogShipSunk(shipSunkName,player);
-           
+          if (shipSunkName !== false) {
+            showDialogShipSunk(shipSunkName, player);
           }
         } else {
           playSoundWaterSplash();
@@ -117,7 +139,7 @@ export function startGame(playerNames) {
               clonedFieldPlayerOne,
               clonedFieldPlayerTwoRecolor,
               clonedFieldPlayerTwo,
-              clonedFieldPlayerOneRecolor
+              clonedFieldPlayerOneRecolor,
             );
           }, 1500);
         }
@@ -136,7 +158,7 @@ export function startGame(playerNames) {
     clonedFieldPlayerOne,
     clonedFieldPlayerTwoRecolor,
     clonedFieldPlayerTwo,
-    clonedFieldPlayerOneRecolor
+    clonedFieldPlayerOneRecolor,
   ) {
     const dialog = document.getElementById("playerTurns");
     document.querySelector(".bothFields").style.pointerEvents = "auto";
@@ -155,7 +177,6 @@ export function startGame(playerNames) {
     const confirmBtn = document.querySelector("#confirmPlayerSwitch");
     confirmBtn.onclick = null;
     confirmBtn.onclick = () => {
-      
       dialog.classList.add("opacity"); // Start der opacity-Transition
       dialog.close();
       const bothFields = mainArea.querySelector(".bothFields");
@@ -168,7 +189,7 @@ export function startGame(playerNames) {
         playerTwoTurn(
           clonedFieldPlayerOne,
           player2,
-          clonedFieldPlayerTwoRecolor
+          clonedFieldPlayerTwoRecolor,
         );
       } else {
         playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
@@ -176,12 +197,11 @@ export function startGame(playerNames) {
         playerOneTurn(
           clonedFieldPlayerTwo,
           player1,
-          clonedFieldPlayerOneRecolor
+          clonedFieldPlayerOneRecolor,
         );
       }
-    }
+    };
   }
-
 }
 function startDialog() {
   const dialog = document.getElementById("chooseGameMode");
@@ -207,15 +227,22 @@ export function createPlayers(playerNames) {
   player2 = new Player(playerNames.playerTwoName);
   playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
   playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
-  return { player1, player2, playerNames, playerOneNameBoard, playerTwoNameBoard};
+  return {
+    player1,
+    player2,
+    playerNames,
+    playerOneNameBoard,
+    playerTwoNameBoard,
+  };
 }
 
- export function placeShips(player) {
-    player.gameboard.ownPlacementPhase();
-    playerOneNameBoard.textContent = player.name + "'s Ocean";
-    playerTwoNameBoard.textContent = player.name +"'s Ship Hangar";
-  }
-export function dialogThatCallsFirstPlayer(playerNames) {
+export function placeShips(player) {
+  player.gameboard.ownPlacementPhase();
+  playerOneNameBoard.textContent = player.name + "'s Ocean";
+  playerTwoNameBoard.textContent = player.name + "'s Ship Hangar";
+}
+export function dialogThatCallsFirstPlayer(playerNames, kindOfSpawn) {
+  console.log(kindOfSpawn);
   const dialog = document.getElementById("playerTurns");
   dialog.showModal();
   dialog.classList.remove("hidden");
@@ -236,12 +263,12 @@ export function dialogThatCallsFirstPlayer(playerNames) {
 
     setTimeout(() => {
       dialog.close();
-      startGame(playerNames);
+      console.log(kindOfSpawn);
+      startGame(playerNames, kindOfSpawn);
     }, 250); // 250ms = Dauer der Transition
   }
   confirmBtn.addEventListener("click", handleConfirmClick);
 }
-
 
 function playSoundWaterSplash() {
   audio.currentTime = 0;
@@ -252,7 +279,7 @@ function playSoundHit() {
   audioTwo.currentTime = 0;
   audioTwo.play();
 }
- 
+
 startDialog();
 
-export { player1, player2, playerNames};
+export { player1, player2, playerNames };

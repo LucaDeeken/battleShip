@@ -1,5 +1,5 @@
 import { Ship } from "./ship.js";
-import { player1, player2} from "./gameFlow.js";
+import { player1, player2 } from "./gameFlow.js";
 import { gameOverDialog } from "./DOMmanipulation.js";
 
 export class Gameboard {
@@ -50,12 +50,12 @@ export class Gameboard {
       gridObject.hit = true;
       console.log(gridObject);
       this.markHitShips(gameboard);
-      if ((gridObject.ship === true) && (gridObject.hit===true)) {
+      if (gridObject.ship === true && gridObject.hit === true) {
         gridObject.shipDetails.hit();
-        return true
+        return true;
       }
     } else {
-      return true
+      return true;
     }
     return false;
   }
@@ -74,7 +74,8 @@ export class Gameboard {
   buildFields() {
     const fieldArea = document.querySelector(".fieldArea");
     const fireArea = document.querySelector(".fireArea");
-
+    console.log(fieldArea);
+    console.log(fireArea);
     fieldArea.innerHTML = "";
     fireArea.innerHTML = "";
 
@@ -116,7 +117,7 @@ export class Gameboard {
       });
     }
   }
-  
+
   randomSpawn() {
     const movements = [-1, 1, 10, -10];
     let startingObject = 0;
@@ -154,7 +155,7 @@ export class Gameboard {
           return sailingShip();
         }
         let testIfPlaceIsAlreadTaken = this.findObjectFromGrid(
-          spawnLocation + randomCord
+          spawnLocation + randomCord,
         );
         if (testIfPlaceIsAlreadTaken.ship === true) {
           this.resetPlacementProcess();
@@ -217,7 +218,7 @@ export class Gameboard {
             return sailingShip();
           }
           testIfPlaceIsAlreadTaken = this.findObjectFromGrid(
-            spawnLocation + randomCord
+            spawnLocation + randomCord,
           );
           if (testIfPlaceIsAlreadTaken.ship === true) {
             this.resetPlacementProcess();
@@ -241,15 +242,25 @@ export class Gameboard {
 
       this.arrayOfShips = [];
       sailingShip();
-      let color = this.getShipColor(lengthOfShip);
-      this.printColorOnShipGrids(color);
+      this.printColorOnShipGrids(this.ships[key].shipColor);
     }
     let savedField = document.querySelector(".fieldArea");
     return savedField;
   }
 
+  getOwnPlacementsIntoStartingGame() {
+    for (let key in this.ships) {
+      let color = this.ships[key].shipColor;
+      console.log(color);
+      this.printColorOnShipGrids(color);
+     }
+    let savedField = document.querySelector(".fieldArea");
+    return savedField;
+  }
   resetPlacementProcess() {
-    this.arrayOfShips.forEach((item) => (item.ship = null, item.shipDetails = null));
+    this.arrayOfShips.forEach(
+      (item) => ((item.ship = null), (item.shipDetails = null)),
+    );
     this.arrayOfShips = [];
     this.firstIter = true;
     this.secondIter = true;
@@ -279,14 +290,48 @@ export class Gameboard {
     return color;
   }
 
-  printColorOnShipGrids(color) {
+  saveOwnPlacementGameboard() {
+    const placementField = document.querySelector(".fieldArea");
+    const fieldBlocks = placementField.querySelectorAll(".fieldBlock");
+    for (let i = 0; fieldBlocks.length > i; i++) {
+      if (fieldBlocks[i].dataset.shipIsHere === "true") {
+        const dataIndex = fieldBlocks[i].dataset.index;
+        const objectGrid = this.findObjectFromGrid(dataIndex);
+        objectGrid.ship = true;
+        const dataColor = fieldBlocks[i].dataset.color;
+        objectGrid.shipDetails = this.getShipNameByColor(dataColor);
+      }
+    }
+  }
+  getShipNameByColor(color) {
+    for (const key in this.ships) {
+      if (this.ships[key].shipColor === color) {
+        return this.ships[key];
+      }
+    }
+    return null; // Falls keine Übereinstimmung gefunden wird
+  }
+
+  clearPlaceBoard() {
+     const placementField = document.querySelector(".fieldArea");
+    const fieldBlocks = placementField.querySelectorAll(".fieldBlock");
+    for (let i = 0; fieldBlocks.length > i; i++) {
+        const dataIndex = fieldBlocks[i].dataset.index;
+        const objectGrid = this.findObjectFromGrid(dataIndex);
+        objectGrid.ship = null;
+        objectGrid.shipDetails = null;
+
+    }
+  }
+
+   printColorOnShipGrids(color) {
     let currentBackgroundColor = "rgb(40, 93, 172)";
     let element = "";
 
     for (let i = 0; i < this.placeBoard.length; i++) {
       let eleBackgroundColor = "";
       this.placeBoard[i].forEach((item) => {
-        if (item.ship && item.hit === false) {
+        if (item.ship && item.hit === false && item.shipDetails.shipColor === color) {
           let firstNum = item.index[0];
           if (firstNum === "0") {
             element = document.querySelector(`[data-index="${item.index[1]}"]`);
@@ -325,7 +370,7 @@ export class Gameboard {
           let firstNum = item.index[0];
           if (firstNum === "0") {
             element = gameBoard.querySelector(
-              `[data-index="${item.index[1]}"]`
+              `[data-index="${item.index[1]}"]`,
             );
             element.textContent = "💥";
             element.classList.add("hitEmoji");
@@ -339,7 +384,7 @@ export class Gameboard {
           let firstNum = item.index[0];
           if (firstNum === "0") {
             element = gameBoard.querySelector(
-              `[data-index="${item.index[1]}"]`
+              `[data-index="${item.index[1]}"]`,
             );
             element.textContent = "🌊";
             element.classList.add("waterEmoji");
@@ -355,10 +400,10 @@ export class Gameboard {
 
   shipSunk() {
     const shipList = Object.values(this.ships);
-    for(let item of shipList) {
-      if ((item.sunk === true) && (item.onSunkList === false)) {
+    for (let item of shipList) {
+      if (item.sunk === true && item.onSunkList === false) {
         console.log(item.shipName + "just Sunk!");
-        item.onSunkList=true;
+        item.onSunkList = true;
         return item.shipName;
       }
     }
@@ -372,14 +417,14 @@ export class Gameboard {
         if (item.ship && item.hit === false) {
           shipStillThere = true;
         }
-      })
+      });
     }
-    if(shipStillThere===false) {
-                  if(player.name===player1.name) {
-                  gameOverDialog(player2);
-                } else {
-                  gameOverDialog(player1);
-                }
+    if (shipStillThere === false) {
+      if (player.name === player1.name) {
+        gameOverDialog(player2);
+      } else {
+        gameOverDialog(player1);
+      }
     } else {
       //ships are still there!
     }
