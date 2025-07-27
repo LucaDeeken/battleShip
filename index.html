@@ -25,12 +25,12 @@
          <div id="playerModeContainer">
            <h2 id="playerModeHeader">Who Do You Want to Play Against?</h2>
            <div id="TwoPlayerMode">
-             <h3 class="headerGameModes"id="headerPlayerModesOne">Versus Friend</h2>
-             <img src="d0150ae9e98de56406df.png" alt="" aria-label="Start Two-Player-Mode" height="180px" width="auto" id="twoPlayerIcon">
+             <h3 class="headerGameModes"id="headerPlayerModesOne">Versus Friend</h3>
+             <img src="d0150ae9e98de56406df.png" alt="" aria-label="Start Two-Player-Mode" id="twoPlayerIcon">
            </div>
            <div id="OnePlayerMode">
-             <h3 class="headerGameModes"id="headerPlayerModesTwo">Versus Computer</h2>
-             <img src="8090c7497e3fe69f9acb.png" alt="" aria-label="Start Single-Player-Mode" height="180px" width="auto" id="twoPlayerIcon"> 
+             <h3 class="headerGameModes"id="headerPlayerModesTwo">Versus Computer</h3>
+             <img src="8090c7497e3fe69f9acb.png" alt="" aria-label="Start Single-Player-Mode" id="twoPlayerIcon"> 
            </div>
          </div>
        </form>
@@ -50,6 +50,22 @@
     </Form>
    </dialog>
 
+   <dialog id="chosePlaceMode" class="hidden">
+      <form method="dialog">
+         <div id="choseModeContainer">
+           <h2 id="choseModeHeader">How do you want to have your ships placed?</h2>
+           <div id="choseOwnPlacement">
+             <h3 class="choseHeaderGameModes"id="choseHeaderPlayerModesOne">Own Placement</h2>
+             <img src="7e43ff57800dec9590ea.png" alt="" aria-label="Start Two-Player-Mode" id="choseTwoPlayerIcon">
+           </div>
+           <div id="choseRandomPlacement">
+             <h3 class="choseHeaderGameModes"id="choseHeaderPlayerModesTwo">Random Placement</h2>
+             <img src="e6ff893604186863956e.png" alt="" aria-label="Start Single-Player-Mode" id="choseTwoPlayerIcon"> 
+           </div>
+         </div>
+       </form>
+   </dialog>
+
    <dialog id="playerTurns" class="hidden" aria-labelledby="playerTurns">
     <Form id="formPlayerSwitch"method="dialog">
       <h2 id="changePlayers">It's Player 1's turn!</h2>
@@ -65,12 +81,18 @@
      </dialog>
 
     <main id="mainArea" class="hidden">
-        <div class="bothFields hidden">
-          <h2 class="ownFleet">Own Fleet</h2>
+      <div class="bothFields hidden">
+        <h2 class="ownFleet">Own Fleet</h2>
         <div class="fieldArea"></div>
         <h2 class="enemyFleet">Enemy Fleet</h2>
-        <div class="fireArea"></div>
+        <div class="fireAreaHangar">
+          <img src="d927272bac7a9f4704ec.png" alt="" aria-label="Start Two-Player-Mode" id="rotateHangar">
+          <div id="shipHangar" class="hidden">
+        </div>
+        </div>
       </div>
+      <button id="confirmPlacementBtn" value="default" >Confirm</button>
+      <button id="resetPlacementBtn" value="default" >Reset</button>
     </main>
 
     <dialog id="WinnersDialog" class="hidden" aria-labelledby="WinnersDialog">
