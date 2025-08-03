@@ -94,6 +94,15 @@ body {
   transition: background-color 1s ease;
 }
 
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
 #bannerContainer {
   justify-self: center;
   white-space: pre;
@@ -266,12 +275,27 @@ main {
 
 @keyframes scaleBig {
   from {
+    transform: translateX(0);
     opacity: 0;
-    scale: 0.9;
+    scale: 0.5;
   }
   to {
+    transform: translateX(0);
     opacity: 1;
     scale: 1;
+  }
+}
+
+@keyframes scaleSmall {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 0;
+    scale: 0.5;
   }
 }
 
@@ -287,6 +311,14 @@ main {
 
 dialog.closing {
   animation: slideDown 0.6s ease forwards;
+}
+
+dialog.getBig {
+  animation: scaleBig 0.3s ease forwards;
+}
+
+dialog.getSmall {
+  animation: scaleSmall 0.5s ease forwards;
 }
 
 dialog {
@@ -745,7 +777,7 @@ form {
 }
 
 #playerTurns.opacity {
-  animation: fadeOut 0.6s ease forwards;
+  animation: scaleBig 0.6s ease forwards;
 }
 
 .flipped {
@@ -795,11 +827,11 @@ form {
   border-radius: 15px;
   justify-self: center;
   align-self: center;
-  width: 360px;
-  height: 330px;
+  width: 400px;
+  height: 380px;
   background-color: rgb(33, 32, 32, 0.89);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  border: none;
+  border: 2px solid white;
   font-family: monospace;
   margin-top: 50px;
   color: rgb(240, 237, 237);
@@ -807,7 +839,7 @@ form {
 }
 
 #headerWinnersDialog {
-  padding-top: 10px;
+  padding-top: 35px;
   font-size: 30px;
   text-align: center;
 }
@@ -816,7 +848,7 @@ form {
   height: 45px;
   border-radius: 10px;
   border: 2px solid white;
-  margin-left: 115px;
+  margin-left: 135px;
 }
 
 #winnerIcon {

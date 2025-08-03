@@ -404,7 +404,7 @@ export class Gameboard {
       if (item.sunk === true && item.onSunkList === false) {
         console.log(item.shipName + "just Sunk!");
         item.onSunkList = true;
-        return item.shipName;
+        return item;
       }
     }
     return false;

@@ -7,65 +7,120 @@ import {
   player2,
   placeShips,
   createPlayers,
+  playSoundApplause,
+  startDialog,
 } from "./gameFlow.js";
+import confetti from "canvas-confetti";
 
 export function inputName() {
   const dialog = document.getElementById("givePlayerName");
   dialog.showModal();
   dialog.classList.remove("hidden");
+  dialog.classList.remove("closing");
   const confirmBtn = document.getElementById("confirmBtn");
-  confirmBtn.addEventListener("click", (e) => {
+
+  function handleConfirmClick(e) {
     e.preventDefault();
     createPlayers(playerNames);
     dialog.classList.add("closing");
     dialog.classList.add("hidden");
+
     setTimeout(() => {
       dialog.close();
-      //dialogThatCallsFirstPlayer(playerNames);
       chosePlaceModeDialog(player1, randomSpawn);
     }, 650);
-  });
+    confirmBtn.removeEventListener("click", handleConfirmClick);
+  }
+  confirmBtn.addEventListener("click", handleConfirmClick);
+
+  const returnBtn = document.getElementById("cancelBtn");
+  function handleReturnClick(e) {
+    e.preventDefault();
+    
+    dialog.classList.add("closing");
+    dialog.classList.add("hidden");
+
+    setTimeout(() => {
+      dialog.close();
+      startDialog();
+    }, 650);
+    returnBtn.removeEventListener("click", handleReturnClick);
+  }
+  returnBtn.addEventListener("click", handleReturnClick);
   return { playerNames };
 }
 
-export function showDialogShipSunk(shipSunkName, player) {
+export function showDialogShipSunk(shipSunkName, player, shipSunkColor) {
   const dialog = document.getElementById("ShipSunkDialog");
   dialog.showModal();
   dialog.classList.remove("hidden");
-  dialog.classList.remove("closing");
+  dialog.classList.remove("getSmall");
+  dialog.classList.add("getBig");
   const confirmBtn = document.getElementById("confirmBtnShip");
   const shipSunkHeader = document.getElementById("shipSunkHeader");
-  shipSunkHeader.textContent = "The" + " " + shipSunkName + " " + "just sunk!";
+  console.log(shipSunkColor);
+  shipSunkHeader.innerHTML = `The <span style="color: ${shipSunkColor};">${shipSunkName}</span> just sunk!`;
   console.log(player);
-  confirmBtn.addEventListener("click", (e) => {
+
+  function handleConfirmClick(e) {
     e.preventDefault();
-    dialog.classList.add("closing");
     dialog.classList.add("hidden");
+    dialog.classList.remove("getBig");
+    dialog.classList.add("getSmall");
     setTimeout(() => {
       dialog.close();
       player.gameboard.allShipsSunk(player);
     }, 650);
-  });
+    confirmBtn.removeEventListener("click", handleConfirmClick);
+  }
+  confirmBtn.addEventListener("click", handleConfirmClick);
+}
+
+function startConfetti() {
+  const duration = 3 * 1000; // 3 Sekunden
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 9,
+      startVelocity: 30,
+      spread: 360,
+      origin: { x: Math.random(), y: Math.random() - 0.2 },
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
 }
 
 export function gameOverDialog(player) {
   const dialog = document.getElementById("WinnersDialog");
   dialog.showModal();
   dialog.classList.remove("hidden");
-  dialog.classList.remove("closing");
+  dialog.classList.remove("getSmall");
+  dialog.classList.add("getBig");
   const confirmBtn = document.getElementById("confirmBtnWin");
   const headerWinner = document.getElementById("headerWinnersDialog");
   headerWinner.textContent = player.name + " " + "won the game!";
+  startConfetti();
+  playSoundApplause();
 
-  confirmBtn.addEventListener("click", (e) => {
+  function handleConfirmClick(e) {
     e.preventDefault();
-    dialog.classList.add("closing");
     dialog.classList.add("hidden");
+    dialog.classList.remove("getBig");
+    dialog.classList.add("getSmall");
+
     setTimeout(() => {
       dialog.close();
       window.location.replace(window.location.href);
-    }, 650); // 300ms = Dauer der Transition
-  });
+    }, 650);
+
+    confirmBtn.removeEventListener("click", handleConfirmClick);
+  }
+
+  confirmBtn.addEventListener("click", handleConfirmClick);
 }
 
 let randomSpawn = false;
@@ -87,6 +142,10 @@ export function chosePlaceModeDialog(player1, placementKind, secondPlayerBol) {
   ownPlacement.addEventListener("click", handleOwnPlacementClick);
 
   function handleRandomPlacementClick() {
+    const confirmBtnPlacement = document.getElementById("confirmPlacementBtn");
+    const resetBtn = document.getElementById("resetPlacementBtn");
+    resetBtn.classList.add("hidden");
+    confirmBtnPlacement.classList.add("hidden");
     dialog.classList.add("closing");
     dialog.classList.add("hidden");
     setTimeout(() => {
@@ -104,7 +163,11 @@ export function chosePlaceModeDialog(player1, placementKind, secondPlayerBol) {
 let beforeFirstReset = true;
 let horizontalRotation = true;
 let secondPlayerDone = false;
-export function placeShipsDialog(player, placementKindParameter, secondPlayerBol) {
+export function placeShipsDialog(
+  player,
+  placementKindParameter,
+  secondPlayerBol,
+) {
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
@@ -433,9 +496,14 @@ export function placeShipsDialog(player, placementKindParameter, secondPlayerBol
   }
 
   const resetBtn = document.getElementById("resetPlacementBtn");
-  resetBtn.addEventListener("click", () => {
+
+  function handleResetClick() {
     resetPlacementProcess(player);
-  });
+    resetBtn.removeEventListener("click", handleResetClick);
+    confirmBtnPlacement.removeEventListener("click", handlePlacementClick);
+  }
+
+  resetBtn.addEventListener("click", handleResetClick);
 
   function resetPlacementProcess(player) {
     if (horizontalRotation === false) {
@@ -448,32 +516,33 @@ export function placeShipsDialog(player, placementKindParameter, secondPlayerBol
     placeShipsDialog(player, placementKindParameter, secondPlayerBol);
   }
 
-const confirmBtnPlacement = document.getElementById("confirmPlacementBtn");
+  const confirmBtnPlacement = document.getElementById("confirmPlacementBtn");
 
-function handlePlacementClick() {
-  console.log(player);
-  player.gameboard.saveOwnPlacementGameboard();
+  function handlePlacementClick() {
+    console.log(player);
+    player.gameboard.saveOwnPlacementGameboard();
 
-  setTimeout(() => {
-    const mainArea = document.getElementById("mainArea");
-    mainArea.classList.add("hidden");
-    const bothFields = mainArea.querySelector(".bothFields");
-    bothFields.classList.add("hidden");
-    console.log(secondPlayerDone);
-    if (secondPlayerDone === true) {
-      resetBtn.classList.add("hidden");
-      confirmBtnPlacement.classList.add("hidden");
-      dialogThatCallsFirstPlayer(playerNames, placementKindParameter);
-      secondPlayerDone = false;
-    } else {
-      placeShipsDialog(player2, placementKindParameter, secondPlayerBol);
-      secondPlayerDone = true;
-    }
+    setTimeout(() => {
+      const mainArea = document.getElementById("mainArea");
+      mainArea.classList.add("hidden");
+      const bothFields = mainArea.querySelector(".bothFields");
+      bothFields.classList.add("hidden");
+      console.log(secondPlayerDone);
+      if (secondPlayerDone === true) {
+        resetBtn.classList.add("hidden");
+        confirmBtnPlacement.classList.add("hidden");
+        secondPlayerDone = false;
+        setTimeout(() => {
+          dialogThatCallsFirstPlayer(playerNames, placementKindParameter);
+        }, 650);
+      } else {
+        placeShipsDialog(player2, placementKindParameter, secondPlayerBol);
+        secondPlayerDone = true;
+      }
 
-    // EventListener entfernen:
-    confirmBtnPlacement.removeEventListener("click", handlePlacementClick);
-  }, 650);
-}
+      confirmBtnPlacement.removeEventListener("click", handlePlacementClick);
+    }, 650);
+  }
 
-confirmBtnPlacement.addEventListener("click", handlePlacementClick);
+  confirmBtnPlacement.addEventListener("click", handlePlacementClick);
 }

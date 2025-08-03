@@ -1,11 +1,19 @@
 import { Gameboard } from "./gameBoard.js";
 import { Ship } from "./ship.js";
 import { Player } from "./player.js";
-import { inputName, showDialogShipSunk, randomSpawn } from "./DOMmanipulation.js";
+import {
+  inputName,
+  showDialogShipSunk,
+  randomSpawn,
+} from "./DOMmanipulation.js";
 import soundFile from "./sounds/water-splash.mp3";
 import soundFileTwo from "./sounds/hit.mp3";
+import soundFileThree from "./sounds/destroyed.mp3";
+import soundFileFour from "./sounds/applause.mp3";
 const audio = new Audio(soundFile);
 const audioTwo = new Audio(soundFileTwo);
+const audioThree = new Audio(soundFileThree);
+const audioFour = new Audio(soundFileFour);
 
 let startGameDialog = true;
 
@@ -35,13 +43,13 @@ export function startGame(playerNames, kindOfSpawn) {
   player1.gameboard.buildFields();
   let savedFieldsPlaceArea;
   let savedFieldsP2;
-  if(kindOfSpawn===true) {
-     savedFieldsPlaceArea = player1.gameboard.randomSpawn();
+  if (kindOfSpawn === true) {
+    savedFieldsPlaceArea = player1.gameboard.randomSpawn();
     console.log("geht rein");
   } else {
     savedFieldsPlaceArea = player1.gameboard.getOwnPlacementsIntoStartingGame();
   }
-  
+
   const clonedFieldPlayerOne = savedFieldsPlaceArea.cloneNode(true);
   console.log(clonedFieldPlayerOne);
   const clonedFieldPlayerOneRecolor = savedFieldsPlaceArea.cloneNode(true);
@@ -52,7 +60,7 @@ export function startGame(playerNames, kindOfSpawn) {
   wholeFieldFireArea.innerHTML = "";
 
   player2.gameboard.buildFields();
-    if(kindOfSpawn===true) {
+  if (kindOfSpawn === true) {
     savedFieldsP2 = player2.gameboard.randomSpawn();
   } else {
     savedFieldsP2 = player2.gameboard.getOwnPlacementsIntoStartingGame();
@@ -119,11 +127,13 @@ export function startGame(playerNames, kindOfSpawn) {
         console.log(playersDontShift);
         if (playersDontShift === true) {
           //playershifting doesnt happen
-          playSoundHit();
-          const shipSunkName = player.gameboard.shipSunk();
-
-          if (shipSunkName !== false) {
-            showDialogShipSunk(shipSunkName, player);
+          
+          const shipSunk = player.gameboard.shipSunk();
+          if (shipSunk !== false) {
+            playSoundDestroyed();
+            showDialogShipSunk(shipSunk.shipName, player, shipSunk.shipColor);
+          } else {
+            playSoundHit();
           }
         } else {
           playSoundWaterSplash();
@@ -164,7 +174,8 @@ export function startGame(playerNames, kindOfSpawn) {
     document.querySelector(".bothFields").style.pointerEvents = "auto";
     dialog.showModal();
     dialog.classList.remove("hidden");
-    dialog.classList.remove("opacity");
+    dialog.classList.remove("getSmall");
+    dialog.classList.add("getBig");
     console.log(player.name);
     if (player.name === player2.name) {
       playerChangeName.textContent =
@@ -177,7 +188,9 @@ export function startGame(playerNames, kindOfSpawn) {
     const confirmBtn = document.querySelector("#confirmPlayerSwitch");
     confirmBtn.onclick = null;
     confirmBtn.onclick = () => {
-      dialog.classList.add("opacity"); // Start der opacity-Transition
+      dialog.classList.add("hidden");
+      dialog.classList.remove("getBig");
+      dialog.classList.add("getSmall");
       dialog.close();
       const bothFields = mainArea.querySelector(".bothFields");
       bothFields.classList.remove("opacity");
@@ -207,6 +220,7 @@ function startDialog() {
   const dialog = document.getElementById("chooseGameMode");
   dialog.showModal(); // Öffnet den Dialog
   dialog.classList.remove("hidden");
+  dialog.classList.remove("closing");
   const startBtn = document.getElementById("TwoPlayerMode");
   startBtn.addEventListener("click", () => {
     dialog.classList.add("closing");
@@ -246,7 +260,7 @@ export function dialogThatCallsFirstPlayer(playerNames, kindOfSpawn) {
   const dialog = document.getElementById("playerTurns");
   dialog.showModal();
   dialog.classList.remove("hidden");
-  dialog.classList.remove("opacity");
+
   const confirmBtn = document.querySelector("#confirmPlayerSwitch");
   playerChangeName.textContent =
     "It's " + playerNames.playerOneName + "'s turn!";
@@ -255,7 +269,6 @@ export function dialogThatCallsFirstPlayer(playerNames, kindOfSpawn) {
     e.preventDefault();
     const dialog = document.getElementById("playerTurns");
 
-    dialog.classList.add("opacity"); // Start der opacity-Transition
     dialog.classList.add("hidden");
 
     // EventListener entfernen
@@ -280,6 +293,16 @@ function playSoundHit() {
   audioTwo.play();
 }
 
+function playSoundDestroyed() {
+  audioThree.currentTime = 0;
+  audioThree.play();
+}
+
+function playSoundApplause() {
+  audioFour.currentTime = 0;
+  audioFour.play();
+}
+
 startDialog();
 
-export { player1, player2, playerNames };
+export { player1, player2, playerNames, playSoundApplause, startDialog };
