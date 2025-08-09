@@ -12,22 +12,30 @@ import {
 } from "./gameFlow.js";
 import confetti from "canvas-confetti";
 
-export function inputName() {
+//Displays the dialog for entering names. In AI mode, only one input field is editable.
+export function inputName(twoPlayerModi) {
   const dialog = document.getElementById("givePlayerName");
   dialog.showModal();
   dialog.classList.remove("hidden");
   dialog.classList.remove("closing");
-  const confirmBtn = document.getElementById("confirmBtn");
 
+  if (twoPlayerModi===false) {
+    const botNameLabel = document.getElementById("labelPlayerTwo");
+    botNameLabel.textContent = "Computer Name:";
+    const botNameValue = document.getElementById("playerTwoName");
+    botNameValue.value = "Admiral Byte";
+    botNameValue.readOnly = true; 
+  }
+
+  const confirmBtn = document.getElementById("confirmBtn");
   function handleConfirmClick(e) {
     e.preventDefault();
     createPlayers(playerNames);
     dialog.classList.add("closing");
     dialog.classList.add("hidden");
-
     setTimeout(() => {
       dialog.close();
-      chosePlaceModeDialog(player1, randomSpawn);
+      chosePlaceModeDialog(player1, randomSpawn, twoPlayerModi);
     }, 650);
     confirmBtn.removeEventListener("click", handleConfirmClick);
   }
@@ -36,10 +44,8 @@ export function inputName() {
   const returnBtn = document.getElementById("cancelBtn");
   function handleReturnClick(e) {
     e.preventDefault();
-    
     dialog.classList.add("closing");
     dialog.classList.add("hidden");
-
     setTimeout(() => {
       dialog.close();
       startDialog();
@@ -47,9 +53,11 @@ export function inputName() {
     returnBtn.removeEventListener("click", handleReturnClick);
   }
   returnBtn.addEventListener("click", handleReturnClick);
+
   return { playerNames };
 }
 
+//Displays the dialog, which pops up, when a ship sinks.
 export function showDialogShipSunk(shipSunkName, player, shipSunkColor) {
   const dialog = document.getElementById("ShipSunkDialog");
   dialog.showModal();
@@ -76,6 +84,7 @@ export function showDialogShipSunk(shipSunkName, player, shipSunkColor) {
   confirmBtn.addEventListener("click", handleConfirmClick);
 }
 
+//Confetti Animation, which shows up, when one Player wins.
 function startConfetti() {
   const duration = 3 * 1000; // 3 Sekunden
   const end = Date.now() + duration;
@@ -94,6 +103,7 @@ function startConfetti() {
   })();
 }
 
+//Displays the Dialog, which shows, when one Player or the Bot wins
 export function gameOverDialog(player) {
   const dialog = document.getElementById("WinnersDialog");
   dialog.showModal();
@@ -124,7 +134,7 @@ export function gameOverDialog(player) {
 }
 
 let randomSpawn = false;
-export function chosePlaceModeDialog(player1, placementKind, secondPlayerBol) {
+export function chosePlaceModeDialog(player1, placementKind, twoPlayerModi) {
   const dialog = document.getElementById("chosePlaceMode");
   dialog.showModal(); // Öffnet den Dialog
   dialog.classList.remove("hidden");
@@ -134,7 +144,8 @@ export function chosePlaceModeDialog(player1, placementKind, secondPlayerBol) {
     dialog.classList.add("hidden");
     setTimeout(() => {
       dialog.close();
-      placeShipsDialog(player1, placementKind, secondPlayerBol);
+      console.log(twoPlayerModi);
+      placeShipsDialog(player1, placementKind, secondPlayerDone, twoPlayerModi);
     }, 650);
   }
   const ownPlacement = document.getElementById("choseOwnPlacement");
@@ -151,7 +162,7 @@ export function chosePlaceModeDialog(player1, placementKind, secondPlayerBol) {
     setTimeout(() => {
       dialog.close();
       placementKind = true;
-      dialogThatCallsFirstPlayer(playerNames, placementKind);
+      dialogThatCallsFirstPlayer(playerNames, placementKind, twoPlayerModi);
     }, 650);
   }
 
@@ -167,7 +178,9 @@ export function placeShipsDialog(
   player,
   placementKindParameter,
   secondPlayerBol,
+  twoPlayerModi,
 ) {
+  console.log(twoPlayerModi);
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
@@ -513,7 +526,7 @@ export function placeShipsDialog(
       horizontalRotation = true;
     }
     player.gameboard.clearPlaceBoard();
-    placeShipsDialog(player, placementKindParameter, secondPlayerBol);
+    placeShipsDialog(player, placementKindParameter, secondPlayerBol, twoPlayerModi);
   }
 
   const confirmBtnPlacement = document.getElementById("confirmPlacementBtn");
@@ -527,16 +540,16 @@ export function placeShipsDialog(
       mainArea.classList.add("hidden");
       const bothFields = mainArea.querySelector(".bothFields");
       bothFields.classList.add("hidden");
-      console.log(secondPlayerDone);
-      if (secondPlayerDone === true) {
+      console.log(twoPlayerModi);
+      if (secondPlayerDone === true || twoPlayerModi===false) {
         resetBtn.classList.add("hidden");
         confirmBtnPlacement.classList.add("hidden");
         secondPlayerDone = false;
         setTimeout(() => {
-          dialogThatCallsFirstPlayer(playerNames, placementKindParameter);
+          dialogThatCallsFirstPlayer(playerNames, placementKindParameter, twoPlayerModi);
         }, 650);
       } else {
-        placeShipsDialog(player2, placementKindParameter, secondPlayerBol);
+        placeShipsDialog(player2, placementKindParameter, secondPlayerBol, twoPlayerModi);
         secondPlayerDone = true;
       }
 

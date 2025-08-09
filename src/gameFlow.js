@@ -25,7 +25,7 @@ let playerChangeName = document.querySelector("#changePlayers");
 let player1 = null;
 let player2 = null;
 
-export function startGame(playerNames, kindOfSpawn) {
+export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
@@ -37,21 +37,16 @@ export function startGame(playerNames, kindOfSpawn) {
   let wholeFieldFireArea = document.querySelector(".fireAreaHangar");
   wholeFieldFireArea.classList.add("fireArea");
   wholeFieldFireArea.classList.remove("fireAreaHangar");
-
-  console.log(player1);
-  console.log(player2);
   player1.gameboard.buildFields();
   let savedFieldsPlaceArea;
   let savedFieldsP2;
   if (kindOfSpawn === true) {
     savedFieldsPlaceArea = player1.gameboard.randomSpawn();
-    console.log("geht rein");
   } else {
     savedFieldsPlaceArea = player1.gameboard.getOwnPlacementsIntoStartingGame();
   }
 
   const clonedFieldPlayerOne = savedFieldsPlaceArea.cloneNode(true);
-  console.log(clonedFieldPlayerOne);
   const clonedFieldPlayerOneRecolor = savedFieldsPlaceArea.cloneNode(true);
 
   let wholeFieldPlaceArea = document.querySelector(".fieldArea");
@@ -60,7 +55,7 @@ export function startGame(playerNames, kindOfSpawn) {
   wholeFieldFireArea.innerHTML = "";
 
   player2.gameboard.buildFields();
-  if (kindOfSpawn === true) {
+  if (kindOfSpawn === true || twoPlayerModi === false) {
     savedFieldsP2 = player2.gameboard.randomSpawn();
   } else {
     savedFieldsP2 = player2.gameboard.getOwnPlacementsIntoStartingGame();
@@ -71,12 +66,18 @@ export function startGame(playerNames, kindOfSpawn) {
   wholeFieldPlaceArea.innerHTML = "";
   wholeFieldFireArea.innerHTML = "";
 
-  playerOneTurn(clonedFieldPlayerTwo, player1, clonedFieldPlayerOneRecolor);
+  playerOneTurn(
+    clonedFieldPlayerTwo,
+    player1,
+    clonedFieldPlayerOneRecolor,
+    twoPlayerModi,
+  );
 
   function playerOneTurn(
     clonedFieldPlayerTwo,
     player1,
     clonedFieldPlayerOneRecolor,
+    twoPlayerModi,
   ) {
     clonedFieldPlayerOneRecolor.classList.remove("fieldArea");
     clonedFieldPlayerOneRecolor.classList.add("fieldArea");
@@ -87,10 +88,9 @@ export function startGame(playerNames, kindOfSpawn) {
     let wholeFieldFireArea = document.querySelector(".fireArea");
     wholeFieldFireArea.replaceWith(clonedFieldPlayerTwo);
     const fireFieldMarks = document.querySelector(".fireArea");
-    buildEventListenersplayers(player2, fireFieldMarks);
+    buildEventListenersplayers(player2, fireFieldMarks, twoPlayerModi);
     refreshOwnBoard(player1);
     player1.gameboard.hideShips();
-    console.log(player1);
   }
 
   function playerTwoTurn(
@@ -106,13 +106,13 @@ export function startGame(playerNames, kindOfSpawn) {
     let wholeFieldPlaceArea = document.querySelector(".fieldArea");
     wholeFieldFireArea.replaceWith(clonedFieldPlayerOne);
     const fireFieldMarks = document.querySelector(".fireArea");
-    buildEventListenersplayers(player1, fireFieldMarks);
+    buildEventListenersplayers(player1, fireFieldMarks, twoPlayerModi);
     wholeFieldPlaceArea.replaceWith(clonedFieldPlayerTwoRecolor);
     refreshOwnBoard(player2);
     player2.gameboard.hideShips();
   }
 
-  function buildEventListenersplayers(player, fireFieldMarks) {
+  function buildEventListenersplayers(player, fireFieldMarks, twoPlayerModi) {
     const fieldBlockFire = fireFieldMarks.getElementsByClassName("fieldBlock");
     let playersDontShift = false;
     for (let i = 0; i < fieldBlockFire.length; i++) {
@@ -124,10 +124,9 @@ export function startGame(playerNames, kindOfSpawn) {
           objectClick,
           fireFieldMarks,
         );
-        console.log(playersDontShift);
         if (playersDontShift === true) {
           //playershifting doesnt happen
-          
+
           const shipSunk = player.gameboard.shipSunk();
           if (shipSunk !== false) {
             playSoundDestroyed();
@@ -137,21 +136,34 @@ export function startGame(playerNames, kindOfSpawn) {
           }
         } else {
           playSoundWaterSplash();
-          document.querySelector(".bothFields").style.pointerEvents = "none";
-          setTimeout(() => {
-            const bothFields = mainArea.querySelector(".bothFields");
-            bothFields.classList.remove("opacityOn");
-            bothFields.classList.add("opacity");
-            playersTurnSwitch(
-              player,
-              player1,
-              player2,
-              clonedFieldPlayerOne,
-              clonedFieldPlayerTwoRecolor,
-              clonedFieldPlayerTwo,
-              clonedFieldPlayerOneRecolor,
-            );
-          }, 1500);
+          if (twoPlayerModi === false) {
+            document.querySelector(".bothFields").style.pointerEvents = "none";
+            setTimeout(() => {
+              async function botPlayEasy() {
+                await player1.gameboard.botTurnHard();
+                document.querySelector(".bothFields").style.pointerEvents =
+                  "auto";
+              }
+              botPlayEasy();
+            }, 100);
+          } else {
+            document.querySelector(".bothFields").style.pointerEvents = "none";
+            setTimeout(() => {
+              const bothFields = mainArea.querySelector(".bothFields");
+              bothFields.classList.remove("opacityOn");
+              bothFields.classList.add("opacity");
+              playersTurnSwitch(
+                player,
+                player1,
+                player2,
+                clonedFieldPlayerOne,
+                clonedFieldPlayerTwoRecolor,
+                clonedFieldPlayerTwo,
+                clonedFieldPlayerOneRecolor,
+                twoPlayerModi,
+              );
+            }, 1500);
+          }
         }
       };
     }
@@ -169,6 +181,7 @@ export function startGame(playerNames, kindOfSpawn) {
     clonedFieldPlayerTwoRecolor,
     clonedFieldPlayerTwo,
     clonedFieldPlayerOneRecolor,
+    twoPlayerModi,
   ) {
     const dialog = document.getElementById("playerTurns");
     document.querySelector(".bothFields").style.pointerEvents = "auto";
@@ -203,6 +216,7 @@ export function startGame(playerNames, kindOfSpawn) {
           clonedFieldPlayerOne,
           player2,
           clonedFieldPlayerTwoRecolor,
+          twoPlayerModi,
         );
       } else {
         playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
@@ -211,6 +225,7 @@ export function startGame(playerNames, kindOfSpawn) {
           clonedFieldPlayerTwo,
           player1,
           clonedFieldPlayerOneRecolor,
+          twoPlayerModi,
         );
       }
     };
@@ -221,15 +236,36 @@ function startDialog() {
   dialog.showModal(); // Öffnet den Dialog
   dialog.classList.remove("hidden");
   dialog.classList.remove("closing");
-  const startBtn = document.getElementById("TwoPlayerMode");
-  startBtn.addEventListener("click", () => {
+
+  let twoPlayerMode = false;
+  const startBtnTwoPlayerMode = document.getElementById("TwoPlayerMode");
+  function handleTwoPlayerClick(e) {
+    e.preventDefault();
     dialog.classList.add("closing");
     dialog.classList.add("hidden");
     setTimeout(() => {
       dialog.close();
-      inputName();
-    }, 650); // 300ms = Dauer der Transition
-  });
+      twoPlayerMode = true;
+      inputName(twoPlayerMode);
+    }, 650);
+    startBtnTwoPlayerMode.removeEventListener("click", handleTwoPlayerClick);
+  }
+  startBtnTwoPlayerMode.addEventListener("click", handleTwoPlayerClick);
+
+  const startBtnKiMode = document.getElementById("KiIcon");
+
+  function handleKIClick(e) {
+    e.preventDefault();
+    dialog.classList.add("closing");
+    dialog.classList.add("hidden");
+    setTimeout(() => {
+      dialog.close();
+      twoPlayerMode = false;
+      inputName(twoPlayerMode);
+    }, 650);
+    startBtnKiMode.removeEventListener("click", handleKIClick);
+  }
+  startBtnKiMode.addEventListener("click", handleKIClick);
 }
 
 export function createPlayers(playerNames) {
@@ -255,8 +291,11 @@ export function placeShips(player) {
   playerOneNameBoard.textContent = player.name + "'s Ocean";
   playerTwoNameBoard.textContent = player.name + "'s Ship Hangar";
 }
-export function dialogThatCallsFirstPlayer(playerNames, kindOfSpawn) {
-  console.log(kindOfSpawn);
+export function dialogThatCallsFirstPlayer(
+  playerNames,
+  kindOfSpawn,
+  twoPlayerModi,
+) {
   const dialog = document.getElementById("playerTurns");
   dialog.showModal();
   dialog.classList.remove("hidden");
@@ -276,8 +315,7 @@ export function dialogThatCallsFirstPlayer(playerNames, kindOfSpawn) {
 
     setTimeout(() => {
       dialog.close();
-      console.log(kindOfSpawn);
-      startGame(playerNames, kindOfSpawn);
+      startGame(playerNames, kindOfSpawn, twoPlayerModi);
     }, 250); // 250ms = Dauer der Transition
   }
   confirmBtn.addEventListener("click", handleConfirmClick);
@@ -305,4 +343,13 @@ function playSoundApplause() {
 
 startDialog();
 
-export { player1, player2, playerNames, playSoundApplause, startDialog };
+export {
+  player1,
+  player2,
+  playerNames,
+  playSoundApplause,
+  startDialog,
+  playSoundWaterSplash,
+  playSoundHit,
+  playSoundDestroyed,
+};

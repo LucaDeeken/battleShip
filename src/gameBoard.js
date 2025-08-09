@@ -1,6 +1,12 @@
 import { Ship } from "./ship.js";
-import { player1, player2 } from "./gameFlow.js";
-import { gameOverDialog } from "./DOMmanipulation.js";
+import {
+  player1,
+  player2,
+  playSoundWaterSplash,
+  playSoundHit,
+  playSoundDestroyed,
+} from "./gameFlow.js";
+import { gameOverDialog, showDialogShipSunk } from "./DOMmanipulation.js";
 
 export class Gameboard {
   constructor() {
@@ -40,42 +46,60 @@ export class Gameboard {
       massive: new Ship(5, "Carrier", "#00CFFF"),
     };
     this.arrayOfShips = [];
-    this.firstIter = true;
+    this.left = false;
+    this.right = false;
+    this.up = false;
+    ((this.down = false), (this.firstIter = true));
     this.secondIter = true;
     this.threeGridShipUsed = false;
+    this.botHitFields = [];
+    for (let i = 0; i < 100; i++) {
+      this.botHitFields.push(i);
+    }
+    this.botHitShips = [];
+    this.botKilledAShip = false;
+    this.movements = [-1, 1, 10, -10];
+    this.movementsBot = [-1, 1, 10, -10];
+    this.botRightHittingDirectionValue = 0;
+    this.botRightHittingDirectionName = "unknown";
+    this.botEndingsAreWater = false;
+    this.botHardModeFields = false;
+    this.bothEndsAreWater = false;
   }
 
   receiveAttack(gridObject, gameboard) {
     if (gridObject.hit === false) {
       gridObject.hit = true;
-      console.log(gridObject);
       this.markHitShips(gameboard);
       if (gridObject.ship === true && gridObject.hit === true) {
         gridObject.shipDetails.hit();
         return true;
       }
     } else {
-      return true;
+      console.log("Jup");
+      return false;
     }
     return false;
   }
 
   findObjectFromGrid(dataIndex) {
-    dataIndex = String(dataIndex);
-    let objectGrid = 0;
-    if (dataIndex.length < 2) {
-      objectGrid = this.placeBoard[0][dataIndex[0]];
+    if (dataIndex > 99 || dataIndex < 0) {
+      return false;
     } else {
-      objectGrid = this.placeBoard[dataIndex[0]][dataIndex[1]];
+      dataIndex = String(dataIndex);
+      let objectGrid = 0;
+      if (dataIndex.length < 2) {
+        objectGrid = this.placeBoard[0][dataIndex[0]];
+      } else {
+        objectGrid = this.placeBoard[dataIndex[0]][dataIndex[1]];
+      }
+      return objectGrid;
     }
-    return objectGrid;
   }
 
   buildFields() {
     const fieldArea = document.querySelector(".fieldArea");
     const fireArea = document.querySelector(".fireArea");
-    console.log(fieldArea);
-    console.log(fireArea);
     fieldArea.innerHTML = "";
     fireArea.innerHTML = "";
 
@@ -84,12 +108,6 @@ export class Gameboard {
       fieldBlock.classList.add("fieldBlock");
       fieldBlock.dataset.index = i;
       fieldArea.appendChild(fieldBlock);
-      const dataIndex = fieldBlock.dataset.index;
-      fieldBlock.addEventListener("click", () => {
-        let objectClick = this.findObjectFromGrid(dataIndex);
-        this.receiveAttack(objectClick);
-        console.log(objectClick);
-      });
     }
     for (let j = 0; j < 100; j++) {
       const fieldBlock = document.createElement("div");
@@ -113,13 +131,11 @@ export class Gameboard {
       const dataIndex = fieldBlock.dataset.index;
       fieldBlock.addEventListener("click", () => {
         let objectClick = this.findObjectFromGrid(dataIndex);
-        console.log(objectClick);
       });
     }
   }
 
   randomSpawn() {
-    const movements = [-1, 1, 10, -10];
     let startingObject = 0;
     let spawnLocation = 0;
     this.arrayOfShips = [];
@@ -127,10 +143,6 @@ export class Gameboard {
       const lengthOfShip = this.ships[key].length;
       this.firstIter = true;
       this.secondIter = true;
-      let left = false;
-      let up = false;
-      let down = false;
-      let right = false;
       const sailingShip = () => {
         if (this.firstIter === true) {
           spawnLocation = Math.floor(Math.random() * 100);
@@ -143,13 +155,13 @@ export class Gameboard {
           startingObject.ship = true;
           startingObject.shipDetails = this.ships[key];
           this.firstIter = false;
-          left = false;
-          up = false;
-          down = false;
-          right = false;
+          this.left = false;
+          this.up = false;
+          this.down = false;
+          this.right = false;
         }
         let randomCord =
-          movements[Math.floor(Math.random() * movements.length)];
+          this.movements[Math.floor(Math.random() * this.movements.length)];
         if (randomCord + spawnLocation < 0 || randomCord + spawnLocation > 99) {
           this.resetPlacementProcess();
           return sailingShip();
@@ -165,16 +177,16 @@ export class Gameboard {
         if (this.secondIter === true) {
           switch (randomCord) {
             case -1:
-              left = true;
+              this.left = true;
               break;
             case 1:
-              right = true;
+              this.right = true;
               break;
             case 10:
-              down = true;
+              this.down = true;
               break;
             case -10:
-              up = true;
+              this.up = true;
               break;
           }
 
@@ -183,8 +195,8 @@ export class Gameboard {
             numToString = "0" + numToString;
           }
           if (
-            (left === true && numToString[1] === "0") ||
-            (right === true && numToString[1] === "9")
+            (this.left === true && numToString[1] === "0") ||
+            (this.right === true && numToString[1] === "9")
           ) {
             this.resetPlacementProcess();
             return sailingShip();
@@ -203,8 +215,8 @@ export class Gameboard {
           }
 
           if (
-            (left === true && numToString[1] === "0") ||
-            (right === true && numToString[1] === "9")
+            (this.left === true && numToString[1] === "0") ||
+            (this.right === true && numToString[1] === "9")
           ) {
             this.resetPlacementProcess();
             return sailingShip();
@@ -224,13 +236,13 @@ export class Gameboard {
             this.resetPlacementProcess();
             return sailingShip();
           }
-          if (left === true) {
+          if (this.left === true) {
             spawnLocation = spawnLocation - 1;
-          } else if (right === true) {
+          } else if (this.right === true) {
             spawnLocation = spawnLocation + 1;
-          } else if (down === true) {
+          } else if (this.down === true) {
             spawnLocation = spawnLocation + 10;
-          } else if (up === true) {
+          } else if (this.up === true) {
             spawnLocation = spawnLocation - 10;
           }
           startingObject = this.findObjectFromGrid(spawnLocation);
@@ -248,12 +260,544 @@ export class Gameboard {
     return savedField;
   }
 
+  async botTurnEasy() {
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const randomIndex = Math.floor(Math.random() * this.botHitFields.length);
+    let hitField = this.botHitFields[randomIndex];
+    let hitGridObject = this.findObjectFromGrid(hitField);
+    const ownFieldGrids = document.querySelector(".fieldArea");
+    let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
+    this.botHitFields.splice(randomIndex, 1);
+
+    const shipSunk = player1.gameboard.shipSunk();
+    console.log(shipSunk);
+    if (shipSunk !== false) {
+      console.log("YEHAWW");
+      playSoundDestroyed();
+      showDialogShipSunk(shipSunk.shipName, player1, shipSunk.shipColor);
+    }
+
+    if (attack === true) {
+      playSoundHit();
+      return this.botTurnEasy();
+    } else {
+      playSoundWaterSplash();
+      return;
+    }
+  }
+
+  async botTurnMedium() {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log(this.botHitFields);
+    console.log(this.botHitShips);
+    if (this.botHitShips.length < 1) {
+      const randomIndex = Math.floor(Math.random() * this.botHitFields.length);
+
+      // Zufälliges Element aus dem Array
+      let hitField = this.botHitFields[randomIndex];
+      let hitGridObject = this.findObjectFromGrid(hitField);
+      console.log(hitGridObject);
+
+      const ownFieldGrids = document.querySelector(".fieldArea");
+      let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
+      this.botHitFields.splice(randomIndex, 1);
+
+      if (attack === true) {
+        playSoundHit();
+        this.botHitShips.push(hitField);
+        return this.botTurnMedium();
+      } else {
+        playSoundWaterSplash();
+        return;
+      }
+    } else {
+      let lastHitField = this.botHitShips[this.botHitShips.length - 1];
+      let cordNextToHit = 0;
+      if (this.botRightHittingDirectionValue !== 0) {
+        cordNextToHit = this.botRightHittingDirectionValue;
+        let nextFieldInLine = this.findObjectFromGrid(
+          cordNextToHit + lastHitField,
+        );
+
+        let numToString = String(lastHitField);
+        if (numToString.length < 2) {
+          numToString = "0" + numToString;
+        }
+
+        if (
+          nextFieldInLine === false ||
+          nextFieldInLine.hit === true ||
+          (this.left === true && numToString[1] === "0") ||
+          (this.right === true && numToString[1] === "9")
+        ) {
+          lastHitField = this.botHitShips[0];
+          if (this.botEndingsAreWater === false) {
+            switch (this.botRightHittingDirectionName) {
+              case "Left":
+                cordNextToHit = 1;
+                break;
+              case "Right":
+                cordNextToHit = -1;
+                break;
+              case "Down":
+                cordNextToHit = -10;
+                break;
+              case "Up":
+                cordNextToHit = 10;
+                break;
+            }
+            this.botEndingsAreWater = true;
+          } else {
+            this.botRightHittingDirectionValue = 0;
+            this.botRightHittingDirectionName = "unknown";
+            this.movementsBot = [-1, 1, 10, -10];
+            this.left = false;
+            this.up = false;
+            this.down = false;
+            this.right = false;
+          }
+        }
+      } else {
+        cordNextToHit =
+          this.movementsBot[
+            Math.floor(Math.random() * this.movementsBot.length)
+          ];
+
+        switch (cordNextToHit) {
+          case -1:
+            this.left = true;
+            break;
+          case 1:
+            this.right = true;
+            break;
+          case 10:
+            this.down = true;
+            break;
+          case -10:
+            this.up = true;
+            break;
+        }
+
+        let numToString = String(lastHitField);
+        if (numToString.length < 2) {
+          numToString = "0" + numToString;
+        }
+
+        if (
+          (this.left === true && numToString[1] === "0") ||
+          (this.right === true && numToString[1] === "9")
+        ) {
+          const index = this.movementsBot.indexOf(cordNextToHit);
+          this.movementsBot.splice(index, 1);
+          this.left = false;
+          this.right = false;
+          this.up = false;
+          this.down = false;
+          return this.botTurnMedium();
+        }
+
+        if (
+          cordNextToHit + lastHitField < 0 ||
+          cordNextToHit + lastHitField > 99
+        ) {
+          const index = this.movementsBot.indexOf(cordNextToHit);
+          this.movementsBot.splice(index, 1);
+          return this.botTurnMedium();
+        }
+      }
+
+      let hitGridObject = this.findObjectFromGrid(cordNextToHit + lastHitField);
+      let gridAlreadyHit = hitGridObject.hit;
+      const ownFieldGrids = document.querySelector(".fieldArea");
+      let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
+      console.log(gridAlreadyHit);
+      if (gridAlreadyHit === true) {
+        return this.botTurnMedium();
+      }
+      const indexOfGrid = Number(hitGridObject.index);
+      const indexOfField = this.botHitFields.indexOf(indexOfGrid);
+      this.botHitFields.splice(indexOfField, 1);
+      const shipSunk = player1.gameboard.shipSunk();
+      if (shipSunk !== false) {
+        playSoundDestroyed();
+        showDialogShipSunk(shipSunk.shipName, player1, shipSunk.shipColor);
+      }
+
+      if (attack === true && shipSunk !== false) {
+        this.botEndingsAreWater = false;
+        this.botHitShips.push(cordNextToHit + lastHitField);
+        let lengthOfSunkShip = shipSunk.length;
+        this.shipSunk();
+        if (lengthOfSunkShip === this.botHitShips.length) {
+          this.botHitShips = [];
+          this.botRightHittingDirectionValue = 0;
+          this.botRightHittingDirectionName = "unknown";
+          this.movementsBot = [-1, 1, 10, -10];
+          this.left = false;
+          this.up = false;
+          this.down = false;
+          this.right = false;
+          let botWonTheGame = this.allShipsSunk(player1);
+          if (botWonTheGame === true) {
+            return;
+          } else {
+            return this.botTurnMedium();
+          }
+        } else {
+          let nameOfSunkShip = shipSunk.shipName;
+
+          for (let i = 0; i < this.placeBoard.length; i++) {
+            this.placeBoard[i].forEach((item) => {
+              if (item.shipDetails?.shipName === nameOfSunkShip) {
+                const indexOfShipInArr = this.botHitShips.indexOf(
+                  Number(item.index),
+                );
+                this.botHitShips.splice(indexOfShipInArr, 1);
+              }
+            });
+          }
+          this.botRightHittingDirectionValue = 0;
+          this.botRightHittingDirectionName = "unknown";
+          this.movementsBot = [-1, 1, 10, -10];
+          this.left = false;
+          this.up = false;
+          this.down = false;
+          this.right = false;
+          return this.botTurnMedium();
+          //wenn andere getroffen wurden
+        }
+      } else if (attack === true) {
+        playSoundHit();
+        this.botHitShips.push(cordNextToHit + lastHitField);
+        this.botRightHittingDirectionValue = cordNextToHit;
+
+        switch (this.botRightHittingDirectionValue) {
+          case -1:
+            this.botRightHittingDirectionName = "Left";
+            break;
+          case 1:
+            this.botRightHittingDirectionName = "Right";
+            break;
+          case 10:
+            this.botRightHittingDirectionName = "Down";
+            break;
+          case -10:
+            this.botRightHittingDirectionName = "Up";
+            break;
+        }
+
+        return this.botTurnMedium();
+      } else {
+        const indexOfDirection = this.movementsBot.indexOf(cordNextToHit);
+        this.movementsBot.splice(indexOfDirection, 1);
+        playSoundWaterSplash();
+        this.left = false;
+        this.right = false;
+        this.up = false;
+        this.down = false;
+        return;
+      }
+    }
+  }
+
+  async botTurnHard() {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    if (this.botHardModeFields === false) {
+      this.botTurnHardHitFields();
+      this.botHardModeFields = true;
+    }
+    console.log(this.botHitFields);
+    console.log(this.botHitShips);
+    if (this.botHitShips.length < 1) {
+      const randomIndex = Math.floor(Math.random() * this.botHitFields.length);
+
+      // Zufälliges Element aus dem Array
+      let hitField = this.botHitFields[randomIndex];
+      let hitGridObject = this.findObjectFromGrid(hitField);
+      console.log(hitGridObject);
+
+      const ownFieldGrids = document.querySelector(".fieldArea");
+      let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
+      this.botHitFields.splice(randomIndex, 1);
+
+      if (attack === true) {
+        playSoundHit();
+        this.botHitShips.push(hitField);
+        return this.botTurnHard();
+      } else {
+        playSoundWaterSplash();
+        return;
+      }
+    } else {
+      let lastHitField = this.botHitShips[this.botHitShips.length - 1];
+      if(this.bothEndsAreWater===true) {
+        lastHitField = this.botHitShips[0];
+        console.log(lastHitField);
+      }
+      
+      let cordNextToHit = 0;
+      if (this.botRightHittingDirectionValue !== 0) {
+        cordNextToHit = this.botRightHittingDirectionValue;
+        let nextFieldInLine = this.findObjectFromGrid(
+          cordNextToHit + lastHitField,
+        );
+
+        let numToString = String(lastHitField);
+        if (numToString.length < 2) {
+          numToString = "0" + numToString;
+        }
+
+        if (
+          nextFieldInLine === false ||
+          nextFieldInLine.hit === true ||
+          (this.left === true && numToString[1] === "0") ||
+          (this.right === true && numToString[1] === "9")
+        ) {
+          lastHitField = this.botHitShips[0];
+          if (this.botEndingsAreWater === false) {
+            switch (this.botRightHittingDirectionName) {
+              case "Left":
+                cordNextToHit = 1;
+                break;
+              case "Right":
+                cordNextToHit = -1;
+                break;
+              case "Down":
+                cordNextToHit = -10;
+                break;
+              case "Up":
+                cordNextToHit = 10;
+                break;
+            }
+            this.botEndingsAreWater = true;
+          } else {
+            this.botRightHittingDirectionValue = 0;
+            this.botRightHittingDirectionName = "unknown";
+            this.movementsBot = [-1, 1, 10, -10];
+            this.left = false;
+            this.up = false;
+            this.down = false;
+            this.right = false;
+            this.bothEndsAreWater = true;
+          }
+        }
+      } else {
+        cordNextToHit =
+          this.movementsBot[
+            Math.floor(Math.random() * this.movementsBot.length)
+          ];
+
+        switch (cordNextToHit) {
+          case -1:
+            this.left = true;
+            break;
+          case 1:
+            this.right = true;
+            break;
+          case 10:
+            this.down = true;
+            break;
+          case -10:
+            this.up = true;
+            break;
+        }
+
+        let numToString = String(lastHitField);
+        if (numToString.length < 2) {
+          numToString = "0" + numToString;
+        }
+
+        if (
+          (this.left === true && numToString[1] === "0") ||
+          (this.right === true && numToString[1] === "9")
+        ) {
+          const index = this.movementsBot.indexOf(cordNextToHit);
+          this.movementsBot.splice(index, 1);
+          this.left = false;
+          this.right = false;
+          this.up = false;
+          this.down = false;
+          return this.botTurnHard();
+        }
+
+        if (
+          cordNextToHit + lastHitField < 0 ||
+          cordNextToHit + lastHitField > 99
+        ) {
+          const index = this.movementsBot.indexOf(cordNextToHit);
+          this.movementsBot.splice(index, 1);
+          this.left = false;
+          this.right = false;
+          this.up = false;
+          this.down = false;
+          return this.botTurnHard();
+        }
+      }
+
+      let hitGridObject = this.findObjectFromGrid(cordNextToHit + lastHitField);
+      console.log(hitGridObject);
+      let gridAlreadyHit = hitGridObject.hit;
+      const ownFieldGrids = document.querySelector(".fieldArea");
+      let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
+      console.log(gridAlreadyHit);
+      if (gridAlreadyHit === true) {
+        const index = this.movementsBot.indexOf(cordNextToHit);
+        this.movementsBot.splice(index, 1);
+        this.left = false;
+        this.right = false;
+        this.up = false;
+        this.down = false;
+        return this.botTurnHard();
+      }
+      const indexOfGrid = Number(hitGridObject.index);
+      const indexOfField = this.botHitFields.indexOf(indexOfGrid);
+      if (indexOfField === -1) {
+        //skip, because this may happen in hard mode - not all indexes are available inside the array.
+      } else {
+        this.botHitFields.splice(indexOfField, 1);
+      }
+      const shipSunk = player1.gameboard.shipSunk();
+      if (shipSunk !== false) {
+        playSoundDestroyed();
+        showDialogShipSunk(shipSunk.shipName, player1, shipSunk.shipColor);
+      }
+
+      if (attack === true && shipSunk !== false) {
+        this.botEndingsAreWater = false;
+        this.botHitShips.push(cordNextToHit + lastHitField);
+        let lengthOfSunkShip = shipSunk.length;
+        this.shipSunk();
+        if (lengthOfSunkShip === this.botHitShips.length) {
+          this.botHitShips = [];
+          this.botRightHittingDirectionValue = 0;
+          this.botRightHittingDirectionName = "unknown";
+          this.movementsBot = [-1, 1, 10, -10];
+          this.left = false;
+          this.up = false;
+          this.down = false;
+          this.right = false;
+          let botWonTheGame = this.allShipsSunk(player1);
+          if (botWonTheGame === true) {
+            return;
+          } else {
+            return this.botTurnHard();
+          }
+        } else {
+          let nameOfSunkShip = shipSunk.shipName;
+
+          for (let i = 0; i < this.placeBoard.length; i++) {
+            this.placeBoard[i].forEach((item) => {
+              if (item.shipDetails?.shipName === nameOfSunkShip) {
+                const indexOfShipInArr = this.botHitShips.indexOf(
+                  Number(item.index),
+                );
+                this.botHitShips.splice(indexOfShipInArr, 1);
+              }
+            });
+          }
+          this.botRightHittingDirectionValue = 0;
+          this.botRightHittingDirectionName = "unknown";
+          this.movementsBot = [-1, 1, 10, -10];
+          this.left = false;
+          this.up = false;
+          this.down = false;
+          this.right = false;
+          return this.botTurnHard();
+          //wenn andere getroffen wurden
+        }
+      } else if (attack === true) {
+        if(this.bothEndsAreWater===true) {
+          this.bothEndsAreWater=false;
+        }
+        playSoundHit();
+        this.botHitShips.push(cordNextToHit + lastHitField);
+        this.botRightHittingDirectionValue = cordNextToHit;
+
+        switch (this.botRightHittingDirectionValue) {
+          case -1:
+            this.botRightHittingDirectionName = "Left";
+            break;
+          case 1:
+            this.botRightHittingDirectionName = "Right";
+            break;
+          case 10:
+            this.botRightHittingDirectionName = "Down";
+            break;
+          case -10:
+            this.botRightHittingDirectionName = "Up";
+            break;
+        }
+
+        return this.botTurnHard();
+      } else {
+        const indexOfDirection = this.movementsBot.indexOf(cordNextToHit);
+        this.movementsBot.splice(indexOfDirection, 1);
+        playSoundWaterSplash();
+        this.left = false;
+        this.right = false;
+        this.up = false;
+        this.down = false;
+        return;
+      }
+    }
+  }
+
+  botTurnHardHitFields() {
+    this.botHitFields = [];
+    let gamble = Math.floor(Math.random() * 2);
+
+    for (let i = 0; i < 100; i++) {
+      if (gamble === 0) {
+        let stringI = String(i);
+        if (stringI.length < 2) {
+          if (i % 2 === 0) {
+            this.botHitFields.push(i);
+          }
+          // else: skipped
+        } else {
+          if (stringI[0] % 2 === 0) {
+            if (stringI[1] % 2 === 0) {
+              this.botHitFields.push(i);
+            }
+          } else {
+            if (stringI[1] % 2 === 1) {
+              this.botHitFields.push(i);
+            }
+          }
+
+          // else: skipped
+        }
+      } else {
+        let stringI = String(i);
+        if (stringI.length < 2) {
+          if (i % 2 === 1) {
+            this.botHitFields.push(i);
+          }
+          // else: skipped
+        } else {
+          if (stringI[0] % 2 === 0) {
+            if (stringI[1] % 2 === 1) {
+              this.botHitFields.push(i);
+            }
+          } else {
+            if (stringI[1] % 2 === 0) {
+              this.botHitFields.push(i);
+            }
+          }
+
+          // else: skipped
+        }
+      }
+    }
+  }
+
   getOwnPlacementsIntoStartingGame() {
     for (let key in this.ships) {
       let color = this.ships[key].shipColor;
-      console.log(color);
       this.printColorOnShipGrids(color);
-     }
+    }
     let savedField = document.querySelector(".fieldArea");
     return savedField;
   }
@@ -313,25 +857,28 @@ export class Gameboard {
   }
 
   clearPlaceBoard() {
-     const placementField = document.querySelector(".fieldArea");
+    const placementField = document.querySelector(".fieldArea");
     const fieldBlocks = placementField.querySelectorAll(".fieldBlock");
     for (let i = 0; fieldBlocks.length > i; i++) {
-        const dataIndex = fieldBlocks[i].dataset.index;
-        const objectGrid = this.findObjectFromGrid(dataIndex);
-        objectGrid.ship = null;
-        objectGrid.shipDetails = null;
-
+      const dataIndex = fieldBlocks[i].dataset.index;
+      const objectGrid = this.findObjectFromGrid(dataIndex);
+      objectGrid.ship = null;
+      objectGrid.shipDetails = null;
     }
   }
 
-   printColorOnShipGrids(color) {
+  printColorOnShipGrids(color) {
     let currentBackgroundColor = "rgb(40, 93, 172)";
     let element = "";
 
     for (let i = 0; i < this.placeBoard.length; i++) {
       let eleBackgroundColor = "";
       this.placeBoard[i].forEach((item) => {
-        if (item.ship && item.hit === false && item.shipDetails.shipColor === color) {
+        if (
+          item.ship &&
+          item.hit === false &&
+          item.shipDetails.shipColor === color
+        ) {
           let firstNum = item.index[0];
           if (firstNum === "0") {
             element = document.querySelector(`[data-index="${item.index[1]}"]`);
@@ -366,7 +913,6 @@ export class Gameboard {
     for (let i = 0; i < this.placeBoard.length; i++) {
       this.placeBoard[i].forEach((item) => {
         if (item.ship && item.hit === true) {
-          console.log(this.placeBoard[i]);
           let firstNum = item.index[0];
           if (firstNum === "0") {
             element = gameBoard.querySelector(
@@ -400,6 +946,7 @@ export class Gameboard {
 
   shipSunk() {
     const shipList = Object.values(this.ships);
+    console.log(shipList);
     for (let item of shipList) {
       if (item.sunk === true && item.onSunkList === false) {
         console.log(item.shipName + "just Sunk!");
@@ -425,6 +972,7 @@ export class Gameboard {
       } else {
         gameOverDialog(player1);
       }
+      return true;
     } else {
       //ships are still there!
     }
