@@ -65,6 +65,7 @@ export class Gameboard {
     this.botEndingsAreWater = false;
     this.botHardModeFields = false;
     this.bothEndsAreWater = false;
+    this.shipSunkButOthersStillHit = false;
   }
 
   receiveAttack(gridObject, gameboard) {
@@ -289,8 +290,7 @@ export class Gameboard {
 
   async botTurnMedium() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(this.botHitFields);
-    console.log(this.botHitShips);
+
     if (this.botHitShips.length < 1) {
       const randomIndex = Math.floor(Math.random() * this.botHitFields.length);
 
@@ -312,7 +312,30 @@ export class Gameboard {
         return;
       }
     } else {
-      let lastHitField = this.botHitShips[this.botHitShips.length - 1];
+      console.log(this.botHitShips);
+      let lastHitField = 0;
+      console.log(this.shipSunkButOthersStillHit);
+      if(this.shipSunkButOthersStillHit) {
+        lastHitField = this.botHitShips[0];
+        this.shipSunkButOthersStillHit= false;
+        console.log("reinda");
+      } else {
+        lastHitField = this.botHitShips[this.botHitShips.length - 1];
+      }
+      console.log(this.movementsBot);
+      console.log(this.movementsBot.length);
+      if(this.movementsBot.length<1) {
+        lastHitField = this.botHitShips[0];
+        this.movementsBot = [-1, 1, 10, -10];
+      }
+
+
+      console.log(lastHitField);
+      if (this.bothEndsAreWater === true) {
+        lastHitField = this.botHitShips[0];
+        console.log(lastHitField);
+      }
+
       let cordNextToHit = 0;
       if (this.botRightHittingDirectionValue !== 0) {
         cordNextToHit = this.botRightHittingDirectionValue;
@@ -356,6 +379,7 @@ export class Gameboard {
             this.up = false;
             this.down = false;
             this.right = false;
+            this.bothEndsAreWater = true;
           }
         }
       } else {
@@ -403,21 +427,36 @@ export class Gameboard {
         ) {
           const index = this.movementsBot.indexOf(cordNextToHit);
           this.movementsBot.splice(index, 1);
+          this.left = false;
+          this.right = false;
+          this.up = false;
+          this.down = false;
           return this.botTurnMedium();
         }
       }
 
       let hitGridObject = this.findObjectFromGrid(cordNextToHit + lastHitField);
+      console.log(hitGridObject);
       let gridAlreadyHit = hitGridObject.hit;
       const ownFieldGrids = document.querySelector(".fieldArea");
       let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
       console.log(gridAlreadyHit);
       if (gridAlreadyHit === true) {
+        const index = this.movementsBot.indexOf(cordNextToHit);
+        this.movementsBot.splice(index, 1);
+        this.left = false;
+        this.right = false;
+        this.up = false;
+        this.down = false;
         return this.botTurnMedium();
       }
       const indexOfGrid = Number(hitGridObject.index);
       const indexOfField = this.botHitFields.indexOf(indexOfGrid);
-      this.botHitFields.splice(indexOfField, 1);
+      if (indexOfField === -1) {
+        //skip, because this may happen in hard mode - not all indexes are available inside the array.
+      } else {
+        this.botHitFields.splice(indexOfField, 1);
+      }
       const shipSunk = player1.gameboard.shipSunk();
       if (shipSunk !== false) {
         playSoundDestroyed();
@@ -457,6 +496,7 @@ export class Gameboard {
               }
             });
           }
+          this.shipSunkButOthersStillHit = true;
           this.botRightHittingDirectionValue = 0;
           this.botRightHittingDirectionName = "unknown";
           this.movementsBot = [-1, 1, 10, -10];
@@ -468,6 +508,9 @@ export class Gameboard {
           //wenn andere getroffen wurden
         }
       } else if (attack === true) {
+        if (this.bothEndsAreWater === true) {
+          this.bothEndsAreWater = false;
+        }
         playSoundHit();
         this.botHitShips.push(cordNextToHit + lastHitField);
         this.botRightHittingDirectionValue = cordNextToHit;
@@ -499,6 +542,7 @@ export class Gameboard {
         return;
       }
     }
+
   }
 
   async botTurnHard() {
@@ -531,7 +575,25 @@ export class Gameboard {
         return;
       }
     } else {
-      let lastHitField = this.botHitShips[this.botHitShips.length - 1];
+      console.log(this.botHitShips);
+      let lastHitField = 0;
+      console.log(this.shipSunkButOthersStillHit);
+      if(this.shipSunkButOthersStillHit) {
+        lastHitField = this.botHitShips[0];
+        this.shipSunkButOthersStillHit= false;
+        console.log("reinda");
+      } else {
+        lastHitField = this.botHitShips[this.botHitShips.length - 1];
+      }
+      console.log(this.movementsBot);
+      console.log(this.movementsBot.length);
+      if(this.movementsBot.length<1) {
+        lastHitField = this.botHitShips[0];
+        this.movementsBot = [-1, 1, 10, -10];
+      }
+
+
+      console.log(lastHitField);
       if (this.bothEndsAreWater === true) {
         lastHitField = this.botHitShips[0];
         console.log(lastHitField);
@@ -697,6 +759,7 @@ export class Gameboard {
               }
             });
           }
+          this.shipSunkButOthersStillHit = true;
           this.botRightHittingDirectionValue = 0;
           this.botRightHittingDirectionName = "unknown";
           this.movementsBot = [-1, 1, 10, -10];
@@ -792,6 +855,8 @@ export class Gameboard {
       }
     }
   }
+
+
 
   getOwnPlacementsIntoStartingGame() {
     for (let key in this.ships) {
