@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,79 +6,142 @@
     <title>Battle-Ship!</title>
   <script defer src="main.js"></script></head>
   <body>
-   
     <div id="bannerContainer">
-      <h1 id="bannerContainer">    
-        
-                              ██████╗░░█████╗░████████╗████████╗██╗░░░░░███████╗░░░░░░░██████╗██╗░░██╗██╗██████╗░██╗
-                              ██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║░░░░░██╔════╝░░░░░░██╔════╝██║░░██║██║██╔══██╗██║
-                              ██████╦╝███████║░░░██║░░░░░░██║░░░██║░░░░░█████╗░░█████╗╚█████╗░███████║██║██████╔╝██║
-                              ██╔══██╗██╔══██║░░░██║░░░░░░██║░░░██║░░░░░██╔══╝░░╚════╝░╚═══██╗██╔══██║██║██╔═══╝░╚═╝
-                              ██████╦╝██║░░██║░░░██║░░░░░░██║░░░███████╗███████╗░░░░░░██████╔╝██║░░██║██║██║░░░░░██╗
-                              ╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░░░░╚═╝░░░╚══════╝╚══════╝░░░░░░╚═════╝░╚═╝░░╚═╝╚═╝╚═╝░░░░░╚═╝                                      
-                                                          
+      <h1 id="bannerContainer">
+        ██████╗░░█████╗░████████╗████████╗██╗░░░░░███████╗░░░░░░░██████╗██╗░░██╗██╗██████╗░██╗
+        ██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║░░░░░██╔════╝░░░░░░██╔════╝██║░░██║██║██╔══██╗██║
+        ██████╦╝███████║░░░██║░░░░░░██║░░░██║░░░░░█████╗░░█████╗╚█████╗░███████║██║██████╔╝██║
+        ██╔══██╗██╔══██║░░░██║░░░░░░██║░░░██║░░░░░██╔══╝░░╚════╝░╚═══██╗██╔══██║██║██╔═══╝░╚═╝
+        ██████╦╝██║░░██║░░░██║░░░░░░██║░░░███████╗███████╗░░░░░░██████╔╝██║░░██║██║██║░░░░░██╗
+        ╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░░░░╚═╝░░░╚══════╝╚══════╝░░░░░░╚═════╝░╚═╝░░╚═╝╚═╝╚═╝░░░░░╚═╝
       </h1>
     </div>
 
     <dialog id="chooseGameMode" class="hidden" aria-labelledby="playerMode">
       <form method="dialog">
-         <div id="playerModeContainer">
-           <h2 id="playerModeHeader">Who Do You Want to Play Against?</h2>
-           <div id="TwoPlayerMode">
-             <h3 class="headerGameModes"id="headerPlayerModesOne">Versus Friend</h3>
-             <img src="d0150ae9e98de56406df.png" alt="" aria-label="Start Two-Player-Mode" id="twoPlayerIcon">
-           </div>
-           <div id="OnePlayerMode">
-             <h3 class="headerGameModes"id="headerPlayerModesTwo">Versus Computer</h3>
-             <img src="8090c7497e3fe69f9acb.png" alt="" aria-label="Start Single-Player-Mode" id="KiIcon"> 
-           </div>
-         </div>
-       </form>
-   </dialog>
+        <div id="playerModeContainer">
+          <h2 id="playerModeHeader">Who Do You Want to Play Against?</h2>
+          <div id="TwoPlayerMode">
+            <h3 class="headerGameModes" id="headerPlayerModesOne">
+              Versus Friend
+            </h3>
+            <img
+              src="d0150ae9e98de56406df.png"
+              alt=""
+              aria-label="Start Two-Player-Mode"
+              id="twoPlayerIcon"
+            />
+          </div>
+          <div id="OnePlayerMode">
+            <h3 class="headerGameModes" id="headerPlayerModesTwo">
+              Versus Computer
+            </h3>
+            <img
+              src="8090c7497e3fe69f9acb.png"
+              alt=""
+              aria-label="Start Single-Player-Mode"
+              id="KiIcon"
+            />
+          </div>
+        </div>
+      </form>
+    </dialog>
 
-   <dialog id="givePlayerName" class="hidden" aria-labelledby="playerNames">
-    <Form id="formPlayerName"method="dialog">
-      <h2 id="insertPNames">Insert Playernames</h2>
-      <fieldset id="playerNameFieldset">
-        <label id="labelPlayer"for="playerOneName">Player One:</label>
-        <input type="text" id="playerOneName" placeholder="Type Name Here">
-        <label id="labelPlayerTwo" for="playerTwoName">Player Two:</label>
-        <input type="text" id="playerTwoName" placeholder="Type Name Here">
-      </fieldset>
-      <button id="confirmBtn" value="default" >Confirm</button>
-      <button id="cancelBtn" value="cancel" type="reset" formmethod="dialog">Return</button>
-    </Form>
-   </dialog>
+    <dialog id="givePlayerName" class="hidden" aria-labelledby="playerNames">
+      <form id="formPlayerName" method="dialog">
+        <h2 id="insertPNames">Insert Playernames</h2>
+        <fieldset id="playerNameFieldset">
+          <label id="labelPlayer" for="playerOneName">Player One:</label>
+          <input type="text" id="playerOneName" placeholder="Type Name Here" />
+          <label id="labelPlayerTwo" for="playerTwoName">Player Two:</label>
+          <input type="text" id="playerTwoName" placeholder="Type Name Here" />
+        </fieldset>
+        <button id="confirmBtn" value="default">Confirm</button>
+        <button id="cancelBtn" value="cancel" type="reset" formmethod="dialog">
+          Return
+        </button>
+      </form>
+    </dialog>
 
-   <dialog id="chosePlaceMode" class="hidden">
+    <dialog id="chosePlaceMode" class="hidden">
       <form method="dialog">
-         <div id="choseModeContainer">
-           <h2 id="choseModeHeader">How do you want to have your ships placed?</h2>
-           <div id="choseOwnPlacement">
-             <h3 class="choseHeaderGameModes"id="choseHeaderPlayerModesOne">Own Placement</h2>
-             <img src="7e43ff57800dec9590ea.png" alt="" aria-label="Start Two-Player-Mode" id="choseTwoPlayerIcon">
-           </div>
-           <div id="choseRandomPlacement">
-             <h3 class="choseHeaderGameModes"id="choseHeaderPlayerModesTwo">Random Placement</h2>
-             <img src="e6ff893604186863956e.png" alt="" aria-label="Start Single-Player-Mode" id="choseTwoPlayerIcon"> 
-           </div>
-         </div>
-       </form>
-   </dialog>
+        <div id="choseModeContainer">
+          <h2 id="choseModeHeader">
+            How do you want to have your ships placed?
+          </h2>
+          <div id="choseOwnPlacement">
+            <h3 class="choseHeaderGameModes" id="choseHeaderPlayerModesOne">
+              Own Placement
+            </h3>
+            <img
+              src="7e43ff57800dec9590ea.png"
+              alt=""
+              aria-label="Start Two-Player-Mode"
+              id="choseTwoPlayerIcon"
+            />
+          </div>
+          <div id="choseRandomPlacement">
+            <h3 class="choseHeaderGameModes" id="choseHeaderPlayerModesTwo">
+              Random Placement
+            </h3>
+            <img
+              src="e6ff893604186863956e.png"
+              alt=""
+              aria-label="Start Single-Player-Mode"
+              id="choseTwoPlayerIcon"
+            />
+          </div>
+        </div>
+      </form>
+    </dialog>
 
-   <dialog id="playerTurns" class="hidden" aria-labelledby="playerTurns">
-    <Form id="formPlayerSwitch"method="dialog">
-      <h2 id="changePlayers">It's Player 1's turn!</h2>
-      <button id="confirmPlayerSwitch" value="default" >Confirm</button>
-    </Form>
-   </dialog>
+    <dialog id="choseBotDifficulty" class="hidden">
+      <form method="dialog">
+        <div id="choseEnemy">
+          <h2 id="choseModeHeader">Chose your Enemy!</h2>
+          <div class="swiper" id="swiper">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide">
+                <img src="ac6ec5af86a44e45c8f4.jpg" alt="Bild 1" />
+              </div>
+              <div class="swiper-slide">
+                <img src="cd99ffc7647501984f48.jpg" alt="Bild 2" />
+              </div>
+              <div class="swiper-slide">
+                <img src="e28cb568d4cbdbb189e8.jpg" alt="Bild 3" />
+              </div>
+            </div>
+            <!-- Navigation / Pagination -->
+            <div class="swiper-pagination" id="swiperArrows"></div>
+            <div class="swiper-button-prev" id="swiperArrows"></div>
+            <div class="swiper-button-next" id="swiperArrows"></div>
+          </div>
+          <section id="descriptionForBot">
+            <h3 id="botHeader">Sir Daydream</h3>
+            <p id="botTextField">Drifting through the skies, he seeks a shadow the ocean claimed long ago. His ship follows his sorrow more than his command.</p>
+            <p id="botDifficulty">Difficulty: <span id="difficultyScale">EASY</span></p>
+          </section>
+        </div>
+        <div id="botDiffBtns">
+        <button id="confirmBtn" class="confirmBotDifficulty">Confirm</button>
+        <button id="cancelBtn" class="returnBotDifficulty">Return</button>
+          </div>
+      </form>
+    </dialog>
 
-       <dialog id="ShipSunkDialog" class="hidden" aria-labelledby="ShipSunkDialog">
-      <Form method="dialog">
+    <dialog id="playerTurns" class="hidden" aria-labelledby="playerTurns">
+      <form id="formPlayerSwitch" method="dialog">
+        <h2 id="changePlayers">It's Player 1's turn!</h2>
+        <button id="confirmPlayerSwitch" value="default">Confirm</button>
+      </form>
+    </dialog>
+
+    <dialog id="ShipSunkDialog" class="hidden" aria-labelledby="ShipSunkDialog">
+      <form method="dialog">
         <h2 id="shipSunkHeader"></h2>
-        <button id="confirmBtnShip" value="default" >Confirm</button>
-      </Form>
-     </dialog>
+        <button id="confirmBtnShip" value="default">Confirm</button>
+      </form>
+    </dialog>
 
     <main id="mainArea" class="hidden">
       <div class="bothFields hidden">
@@ -86,22 +149,32 @@
         <div class="fieldArea"></div>
         <h2 class="enemyFleet">Enemy Fleet</h2>
         <div class="fireAreaHangar">
-          <img src="d927272bac7a9f4704ec.png" alt="" aria-label="Start Two-Player-Mode" id="rotateHangar">
-          <div id="shipHangar" class="hidden">
-        </div>
+          <img
+            src="d927272bac7a9f4704ec.png"
+            alt=""
+            aria-label="Start Two-Player-Mode"
+            id="rotateHangar"
+          />
+          <div id="shipHangar" class="hidden"></div>
         </div>
       </div>
-      <button id="confirmPlacementBtn" value="default" >Confirm</button>
-      <button id="resetPlacementBtn" value="default" >Reset</button>
+      <button id="confirmPlacementBtn" value="default">Confirm</button>
+      <button id="resetPlacementBtn" value="default">Reset</button>
     </main>
 
     <dialog id="WinnersDialog" class="hidden" aria-labelledby="WinnersDialog">
-      <Form method="dialog">
+      <form method="dialog">
         <h2 id="headerWinnersDialog"></h2>
-        <img src="2fc3bd65c6ad310a6f82.png" alt="" height="180px" width="auto" id="winnerIcon">
-        <button id="confirmBtnWin" value="default" >Play again!</button>
-      </Form>
-     </dialog>
-     <canvas id="confetti-canvas"></canvas>
+        <img
+          src="2fc3bd65c6ad310a6f82.png"
+          alt=""
+          height="180px"
+          width="auto"
+          id="winnerIcon"
+        />
+        <button id="confirmBtnWin" value="default">Play again!</button>
+      </form>
+    </dialog>
+    <canvas id="confetti-canvas"></canvas>
   </body>
 </html>
