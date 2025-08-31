@@ -25,6 +25,8 @@
     "webpack-dev-server": "^5.2.1"
   },
   "dependencies": {
-    "canvas-confetti": "^1.9.3"
+    "canvas-confetti": "^1.9.3",
+    "imagecarousel-goldmund": "^1.0.2",
+    "swiper": "^11.2.10"
   }
 }

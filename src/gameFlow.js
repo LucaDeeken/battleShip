@@ -26,6 +26,7 @@ let player1 = null;
 let player2 = null;
 
 export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
+  console.log(twoPlayerModi);
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
@@ -139,12 +140,26 @@ export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
           if (twoPlayerModi === false) {
             document.querySelector(".bothFields").style.pointerEvents = "none";
             setTimeout(() => {
-              async function botPlayEasy() {
-                await player1.gameboard.botTurnHard();
+              async function botPlay() {
+                console.log(player2.name);
+                switch (player2.name) {
+                  case "Sir Daydream":
+                    console.log("easy");
+                  await player1.gameboard.botTurnEasy();
+                  break;
+                  case "Miss Deadeye":
+                    console.log("medium");
+                  await player1.gameboard.botTurnMedium();
+                  break;
+                  case "The Damned Captain":
+                    console.log("hard");
+                  await player1.gameboard.botTurnHard();
+                  break;
+                }
                 document.querySelector(".bothFields").style.pointerEvents =
                   "auto";
               }
-              botPlayEasy();
+              botPlay();
             }, 100);
           } else {
             document.querySelector(".bothFields").style.pointerEvents = "none";
@@ -249,6 +264,7 @@ function startDialog() {
       inputName(twoPlayerMode);
     }, 650);
     startBtnTwoPlayerMode.removeEventListener("click", handleTwoPlayerClick);
+    startBtnKiMode.removeEventListener("click", handleKIClick);
   }
   startBtnTwoPlayerMode.addEventListener("click", handleTwoPlayerClick);
 
@@ -264,19 +280,27 @@ function startDialog() {
       inputName(twoPlayerMode);
     }, 650);
     startBtnKiMode.removeEventListener("click", handleKIClick);
+    startBtnTwoPlayerMode.removeEventListener("click", handleTwoPlayerClick);
   }
   startBtnKiMode.addEventListener("click", handleKIClick);
 }
 
-export function createPlayers(playerNames) {
+export function createPlayers(playerNames, twoPlayerModi) {
   const namePlayerOne = document.getElementById("playerOneName");
-  const namePlayerTwo = document.getElementById("playerTwoName");
   playerNames.playerOneName = namePlayerOne.value;
-  playerNames.playerTwoName = namePlayerTwo.value;
   player1 = new Player(playerNames.playerOneName);
-  player2 = new Player(playerNames.playerTwoName);
   playerOneNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
-  playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
+
+  if (twoPlayerModi === true) {
+    const namePlayerTwo = document.getElementById("playerTwoName");
+    playerNames.playerTwoName = namePlayerTwo.value;
+    player2 = new Player(playerNames.playerTwoName);
+    playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
+  } else {
+    playerNames.playerTwoName= "Sir Daydream";
+    player2 = new Player(playerNames.playerTwoName);
+    playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
+  }
   return {
     player1,
     player2,

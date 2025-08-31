@@ -261,7 +261,7 @@ export class Gameboard {
   }
 
   async botTurnEasy() {
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const randomIndex = Math.floor(Math.random() * this.botHitFields.length);
     let hitField = this.botHitFields[randomIndex];
@@ -532,11 +532,11 @@ export class Gameboard {
       }
     } else {
       let lastHitField = this.botHitShips[this.botHitShips.length - 1];
-      if(this.bothEndsAreWater===true) {
+      if (this.bothEndsAreWater === true) {
         lastHitField = this.botHitShips[0];
         console.log(lastHitField);
       }
-      
+
       let cordNextToHit = 0;
       if (this.botRightHittingDirectionValue !== 0) {
         cordNextToHit = this.botRightHittingDirectionValue;
@@ -708,8 +708,8 @@ export class Gameboard {
           //wenn andere getroffen wurden
         }
       } else if (attack === true) {
-        if(this.bothEndsAreWater===true) {
-          this.bothEndsAreWater=false;
+        if (this.bothEndsAreWater === true) {
+          this.bothEndsAreWater = false;
         }
         playSoundHit();
         this.botHitShips.push(cordNextToHit + lastHitField);

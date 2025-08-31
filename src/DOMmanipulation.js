@@ -10,32 +10,118 @@ import {
   playSoundApplause,
   startDialog,
 } from "./gameFlow.js";
+import { Player } from "./player.js";
 import confetti from "canvas-confetti";
+import Swiper from "swiper";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
+//For the galleryCarousel
+const swiper = new Swiper(".swiper", {
+  modules: [Navigation, Pagination, Autoplay],
+  loop: false,
+  pagination: {
+    el: ".swiper-pagination",
+    clickable: true,
+  },
+  navigation: {
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+  },
+});
+
+const botHeaderTexts = [
+  "Sir Daydream",
+  "Miss Deadeye",
+  "The Damned Captain",
+  // usw.
+];
+
+const botDescriptionTexts = [
+  "Drifting through the skies, he seeks a shadow the ocean claimed long ago. His ship follows his sorrow more than his command.",
+  "A sharp-witted pirate engineer who robs the rich to arm the poor. Her mechanical monocle calculates every shot, making her a cunning strategist on the high seas.",
+  "Doomed for unsealing Pandora’s box, he rises from the deep, dripping with seawater and cloaked in decay, a wraith of the tides, eternally seeking freedom from his endless curse.",
+  // usw.
+];
+
+const botDifficultyText = [
+  "Difficulty: <span id='difficultyScale'>EASY</span>",
+  "Difficulty: <span id='difficultyScale'>MEDIUM</span>",
+  "Difficulty: <span id='difficultyScale'>HARD</span>",
+  // usw.
+];
+
+const botTextHeader = document.getElementById("botHeader");
+const botTextField = document.getElementById("botTextField");
+const botDifficulty = document.getElementById("botDifficulty");
+const colorDifficulty = document.getElementById("difficultyScale");
+
+swiper.on("slideChange", () => {
+  const currentIndex = swiper.realIndex; // oder swiper.activeIndex (inkl. loop-Slides)
+  botTextHeader.innerHTML = botHeaderTexts[currentIndex];
+  botTextField.innerHTML = botDescriptionTexts[currentIndex];
+  botDifficulty.innerHTML = botDifficultyText[currentIndex];
+
+  let botDifficultyColor = document.getElementById("difficultyScale");
+  console.log(botDifficultyColor);
+  switch (botDifficultyColor.textContent) {
+    case "EASY":
+      botDifficultyColor.style.color = "green";
+      break;
+    case "MEDIUM":
+      botDifficultyColor.style.color = "yellow";
+      break;
+    case "HARD":
+      botDifficultyColor.style.color = "red";
+      break;
+  }
+});
 
 //Displays the dialog for entering names. In AI mode, only one input field is editable.
 export function inputName(twoPlayerModi) {
+  console.log("yiwdsaf");
   const dialog = document.getElementById("givePlayerName");
+  const innerHTMLofDialog = dialog.innerHTML;
   dialog.showModal();
   dialog.classList.remove("hidden");
   dialog.classList.remove("closing");
+  const formElement = document.getElementById("formPlayerName");
+  const yourName = document.querySelector("#labelPlayer");
+  const fieldSet = document.querySelector("#playerNameFieldset");
 
-  if (twoPlayerModi===false) {
+  if (twoPlayerModi === false) {
+    dialog.style.height = "270px";
+    formElement.style.rowGap = "10px";
+    const header = document.getElementById("insertPNames");
+    header.textContent = "Insert Playername!";
+    yourName.textContent = "Your Name:";
+    yourName.style.alignSelf = "center";
     const botNameLabel = document.getElementById("labelPlayerTwo");
-    botNameLabel.textContent = "Computer Name:";
+    botNameLabel.remove(); 
     const botNameValue = document.getElementById("playerTwoName");
-    botNameValue.value = "Admiral Byte";
-    botNameValue.readOnly = true; 
+    botNameValue.remove();
+    fieldSet.style.height = "100px";
+    fieldSet.style.alignSelf = "center";
   }
 
   const confirmBtn = document.getElementById("confirmBtn");
   function handleConfirmClick(e) {
     e.preventDefault();
-    createPlayers(playerNames);
+    createPlayers(playerNames, twoPlayerModi);
     dialog.classList.add("closing");
     dialog.classList.add("hidden");
     setTimeout(() => {
       dialog.close();
-      chosePlaceModeDialog(player1, randomSpawn, twoPlayerModi);
+      if (twoPlayerModi === false) {
+        console.log(player1);
+        choseBotDifficulty(player1, twoPlayerModi);
+        dialog.innerHTML = innerHTMLofDialog;
+      } else {
+        chosePlaceModeDialog(player1, randomSpawn, twoPlayerModi);
+        dialog.innerHTML = innerHTMLofDialog;
+      }
     }, 650);
     confirmBtn.removeEventListener("click", handleConfirmClick);
   }
@@ -49,12 +135,61 @@ export function inputName(twoPlayerModi) {
     setTimeout(() => {
       dialog.close();
       startDialog();
+      dialog.innerHTML = innerHTMLofDialog;
+      if (twoPlayerModi === false) {
+        dialog.style.height = "350px";
+        formElement.style.rowGap = "24px";
+        fieldSet.style.removeProperty("height");
+        fieldSet.style.removeProperty("align-self");
+        yourName.style.removeProperty("align-self");
+    }
     }, 650);
     returnBtn.removeEventListener("click", handleReturnClick);
   }
   returnBtn.addEventListener("click", handleReturnClick);
 
   return { playerNames };
+}
+
+export function choseBotDifficulty(player, twoPlayerMode) {
+  const dialog = document.getElementById("choseBotDifficulty");
+  dialog.showModal();
+  dialog.classList.remove("hidden");
+  dialog.classList.remove("closing");
+
+  const confirmBtn = dialog.querySelector("#confirmBtn");
+  function handleConfirmClick(e) {
+    e.preventDefault();
+    const chosenBotEnemy = document.getElementById("botHeader").textContent;
+    let playerTwoNameBoard = document.querySelector(".enemyFleet");
+    playerNames.playerTwoName=chosenBotEnemy;
+    player2.name = chosenBotEnemy;
+    playerTwoNameBoard.innerHTML = `<span class="playerNameTwo">${playerNames.playerTwoName}</span>'s Fleet`;
+    console.log(player2.name);
+
+    dialog.classList.add("closing");
+    dialog.classList.add("hidden");
+    setTimeout(() => {
+      dialog.close();
+      chosePlaceModeDialog(player, randomSpawn, twoPlayerMode);
+    }, 650);
+    confirmBtn.removeEventListener("click", handleConfirmClick);
+  }
+  confirmBtn.addEventListener("click", handleConfirmClick);
+
+  const returnBtn = dialog.querySelector("#cancelBtn");
+  function handleReturnClick(e) {
+    e.preventDefault();
+    dialog.classList.add("closing");
+    dialog.classList.add("hidden");
+    setTimeout(() => {
+      dialog.close();
+      inputName(twoPlayerMode);
+    }, 650);
+    returnBtn.removeEventListener("click", handleReturnClick);
+  }
+  returnBtn.addEventListener("click", handleReturnClick);
+
 }
 
 //Displays the dialog, which pops up, when a ship sinks.
@@ -135,6 +270,8 @@ export function gameOverDialog(player) {
 
 let randomSpawn = false;
 export function chosePlaceModeDialog(player1, placementKind, twoPlayerModi) {
+  console.log(player1);
+  console.log(twoPlayerModi);
   const dialog = document.getElementById("chosePlaceMode");
   dialog.showModal(); // Öffnet den Dialog
   dialog.classList.remove("hidden");
@@ -526,7 +663,12 @@ export function placeShipsDialog(
       horizontalRotation = true;
     }
     player.gameboard.clearPlaceBoard();
-    placeShipsDialog(player, placementKindParameter, secondPlayerBol, twoPlayerModi);
+    placeShipsDialog(
+      player,
+      placementKindParameter,
+      secondPlayerBol,
+      twoPlayerModi,
+    );
   }
 
   const confirmBtnPlacement = document.getElementById("confirmPlacementBtn");
@@ -541,15 +683,32 @@ export function placeShipsDialog(
       const bothFields = mainArea.querySelector(".bothFields");
       bothFields.classList.add("hidden");
       console.log(twoPlayerModi);
-      if (secondPlayerDone === true || twoPlayerModi===false) {
+      if (secondPlayerDone === true || twoPlayerModi === false) {
         resetBtn.classList.add("hidden");
         confirmBtnPlacement.classList.add("hidden");
         secondPlayerDone = false;
         setTimeout(() => {
-          dialogThatCallsFirstPlayer(playerNames, placementKindParameter, twoPlayerModi);
+          dialogThatCallsFirstPlayer(
+            playerNames,
+            placementKindParameter,
+            twoPlayerModi,
+          );
         }, 650);
       } else {
-        placeShipsDialog(player2, placementKindParameter, secondPlayerBol, twoPlayerModi);
+        if (horizontalRotation === false) {
+          const shipHangar = document.getElementById("shipHangarRotated");
+          shipHangar.innerHTML = "";
+          shipHangar.id = "shipHangar";
+          buildShipHangar("shipInHangarContainer");
+          addDragEventsToShips("shipInHangarContainer");
+          horizontalRotation = true;
+        }
+        placeShipsDialog(
+          player2,
+          placementKindParameter,
+          secondPlayerBol,
+          twoPlayerModi,
+        );
         secondPlayerDone = true;
       }
 
