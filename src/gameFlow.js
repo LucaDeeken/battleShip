@@ -1,32 +1,48 @@
-import { Gameboard } from "./gameBoard.js";
-import { Ship } from "./ship.js";
 import { Player } from "./player.js";
 import {
   inputName,
   showDialogShipSunk,
-  randomSpawn,
 } from "./DOMmanipulation.js";
 import soundFile from "./sounds/water-splash.mp3";
 import soundFileTwo from "./sounds/hit.mp3";
 import soundFileThree from "./sounds/destroyed.mp3";
 import soundFileFour from "./sounds/applause.mp3";
+import soundFileFive from "./sounds/Daydream_firstHit.mp3";
+import soundFileSix from "./sounds/Daydream_oneLeft.mp3";
+import soundFileSeven from "./sounds/Daydream_gameOver.mp3";
+import soundFileEight from "./sounds/Deadeye_firstHit.mp3";
+import soundFileNine from "./sounds/Deadeye_oneLeft.mp3";
+import soundFileTen from "./sounds/Deadeye_gameOver.mp3";
+import soundFileEleven from "./sounds/Damned_firstHit.mp3";
+import soundFileTwelve from "./sounds/Damned_oneLeft.mp3";
+import soundFileThirteen from "./sounds/Damned_gameOver.mp3";
+
 const audio = new Audio(soundFile);
 const audioTwo = new Audio(soundFileTwo);
 const audioThree = new Audio(soundFileThree);
 const audioFour = new Audio(soundFileFour);
-
-let startGameDialog = true;
+const Daydream_firstHit = new Audio(soundFileFive);
+const Daydream_lastHit = new Audio(soundFileSix);
+const Daydream_gameOver = new Audio(soundFileSeven);
+const Deadeye_firstHit = new Audio(soundFileEight);
+const Deadeye_lastHit = new Audio(soundFileNine);
+const Deadeye_gameOver = new Audio(soundFileTen);
+const Damned_firstHit = new Audio(soundFileEleven);
+const Damned_lastHit = new Audio(soundFileTwelve);
+const Damned_gameOver = new Audio(soundFileThirteen);
 
 let playerNames = {};
 let playerOneNameBoard = document.querySelector(".ownFleet");
 let playerTwoNameBoard = document.querySelector(".enemyFleet");
-let playerChangeName = document.querySelector("#changePlayers");
+export let playerChangeName = document.querySelector("#changePlayers");
 
 let player1 = null;
 let player2 = null;
 
+//Starts the game and builds fields depending of playerCount and placementMethod.
+//Also manages the playerTurnChanges and DOM-Building.
 export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
-  console.log(twoPlayerModi);
+
   const mainArea = document.getElementById("mainArea");
   mainArea.classList.remove("hidden");
   const bothFields = mainArea.querySelector(".bothFields");
@@ -113,6 +129,7 @@ export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
     player2.gameboard.hideShips();
   }
 
+  //rebuilds the EventListeners of the FieldBlocks and also manages the botTurns, depending of set difficulty.
   function buildEventListenersplayers(player, fireFieldMarks, twoPlayerModi) {
     const fieldBlockFire = fireFieldMarks.getElementsByClassName("fieldBlock");
     let playersDontShift = false;
@@ -141,25 +158,25 @@ export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
             document.querySelector(".bothFields").style.pointerEvents = "none";
             setTimeout(() => {
               async function botPlay() {
-                console.log(player2.name);
                 switch (player2.name) {
                   case "Sir Daydream":
-                    console.log("easy");
-                  await player1.gameboard.botTurnEasy();
-                  break;
+                    await player1.gameboard.botTurnEasy("Sir Daydream");
+                    break;
                   case "Miss Deadeye":
-                    console.log("medium");
-                  await player1.gameboard.botTurnMedium();
-                  break;
+                    await player1.gameboard.botTurnMedium("Miss Deadeye");
+                    break;
                   case "The Damned Captain":
-                    console.log("hard");
-                  await player1.gameboard.botTurnHard();
-                  break;
+                    await player1.gameboard.botTurnHard("The Damned Captain");
+                    break;
                 }
-                document.querySelector(".bothFields").style.pointerEvents =
-                  "auto";
               }
-              botPlay();
+              (async () => {
+                await botPlay();
+                setTimeout(() => {
+                  document.querySelector(".bothFields").style.pointerEvents =
+                    "auto";
+                }, 1600);
+              })();
             }, 100);
           } else {
             document.querySelector(".bothFields").style.pointerEvents = "none";
@@ -188,6 +205,7 @@ export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
     player.gameboard.markHitShips(ownBoard);
   }
 
+  //manages the playerTurnSwitch dialog
   function playersTurnSwitch(
     player,
     player1,
@@ -204,7 +222,6 @@ export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
     dialog.classList.remove("hidden");
     dialog.classList.remove("getSmall");
     dialog.classList.add("getBig");
-    console.log(player.name);
     if (player.name === player2.name) {
       playerChangeName.textContent =
         "It's " + playerNames.playerTwoName + "'s turn!";
@@ -223,7 +240,6 @@ export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
       const bothFields = mainArea.querySelector(".bothFields");
       bothFields.classList.remove("opacity");
       bothFields.classList.add("opacityOn");
-      console.log(player1);
       if (player.name === player2.name) {
         playerOneNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
         playerTwoNameBoard.textContent = playerNames.playerOneName + "'s Fleet";
@@ -246,45 +262,9 @@ export function startGame(playerNames, kindOfSpawn, twoPlayerModi) {
     };
   }
 }
-function startDialog() {
-  const dialog = document.getElementById("chooseGameMode");
-  dialog.showModal(); // Öffnet den Dialog
-  dialog.classList.remove("hidden");
-  dialog.classList.remove("closing");
 
-  let twoPlayerMode = false;
-  const startBtnTwoPlayerMode = document.getElementById("TwoPlayerMode");
-  function handleTwoPlayerClick(e) {
-    e.preventDefault();
-    dialog.classList.add("closing");
-    dialog.classList.add("hidden");
-    setTimeout(() => {
-      dialog.close();
-      twoPlayerMode = true;
-      inputName(twoPlayerMode);
-    }, 650);
-    startBtnTwoPlayerMode.removeEventListener("click", handleTwoPlayerClick);
-    startBtnKiMode.removeEventListener("click", handleKIClick);
-  }
-  startBtnTwoPlayerMode.addEventListener("click", handleTwoPlayerClick);
 
-  const startBtnKiMode = document.getElementById("KiIcon");
-
-  function handleKIClick(e) {
-    e.preventDefault();
-    dialog.classList.add("closing");
-    dialog.classList.add("hidden");
-    setTimeout(() => {
-      dialog.close();
-      twoPlayerMode = false;
-      inputName(twoPlayerMode);
-    }, 650);
-    startBtnKiMode.removeEventListener("click", handleKIClick);
-    startBtnTwoPlayerMode.removeEventListener("click", handleTwoPlayerClick);
-  }
-  startBtnKiMode.addEventListener("click", handleKIClick);
-}
-
+//creates the playerClasses
 export function createPlayers(playerNames, twoPlayerModi) {
   const namePlayerOne = document.getElementById("playerOneName");
   playerNames.playerOneName = namePlayerOne.value;
@@ -297,7 +277,7 @@ export function createPlayers(playerNames, twoPlayerModi) {
     player2 = new Player(playerNames.playerTwoName);
     playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
   } else {
-    playerNames.playerTwoName= "Sir Daydream";
+    playerNames.playerTwoName = "Sir Daydream";
     player2 = new Player(playerNames.playerTwoName);
     playerTwoNameBoard.textContent = playerNames.playerTwoName + "'s Fleet";
   }
@@ -315,35 +295,8 @@ export function placeShips(player) {
   playerOneNameBoard.textContent = player.name + "'s Ocean";
   playerTwoNameBoard.textContent = player.name + "'s Ship Hangar";
 }
-export function dialogThatCallsFirstPlayer(
-  playerNames,
-  kindOfSpawn,
-  twoPlayerModi,
-) {
-  const dialog = document.getElementById("playerTurns");
-  dialog.showModal();
-  dialog.classList.remove("hidden");
 
-  const confirmBtn = document.querySelector("#confirmPlayerSwitch");
-  playerChangeName.textContent =
-    "It's " + playerNames.playerOneName + "'s turn!";
-
-  function handleConfirmClick(e) {
-    e.preventDefault();
-    const dialog = document.getElementById("playerTurns");
-
-    dialog.classList.add("hidden");
-
-    // EventListener entfernen
-    confirmBtn.removeEventListener("click", handleConfirmClick);
-
-    setTimeout(() => {
-      dialog.close();
-      startGame(playerNames, kindOfSpawn, twoPlayerModi);
-    }, 250); // 250ms = Dauer der Transition
-  }
-  confirmBtn.addEventListener("click", handleConfirmClick);
-}
+//This one is unique, because it manages the very first dialog, that calls the beginning player.
 
 function playSoundWaterSplash() {
   audio.currentTime = 0;
@@ -365,14 +318,67 @@ function playSoundApplause() {
   audioFour.play();
 }
 
-startDialog();
+export function playSoundFirstHit(enemy) {
+  switch (enemy) {
+    case "Sir Daydream":
+      Daydream_firstHit.currentTime = 0;
+      Daydream_firstHit.play();
+      break;
+    case "Miss Deadeye":
+      Deadeye_firstHit.currentTime = 0;
+      Deadeye_firstHit.play();
+      break;
+    case "The Damned Captain":
+      Damned_firstHit.currentTime = 0;
+      Damned_firstHit.play();
+      break;
+  }
+}
+
+export function playSoundOneLeftHit(enemy) {
+  switch (enemy) {
+    case "Sir Daydream":
+      Daydream_lastHit.currentTime = 0;
+      Daydream_lastHit.play();
+      break;
+    case "Miss Deadeye":
+      Deadeye_lastHit.currentTime = 0;
+      Deadeye_lastHit.play();
+      break;
+    case "The Damned Captain":
+      Damned_lastHit.currentTime = 0;
+      Damned_lastHit.play();
+      break;
+  }
+}
+
+export function playSoundGameover(enemy) {
+  switch (enemy) {
+    case "Sir Daydream":
+      Daydream_gameOver.currentTime = 0;
+      Daydream_gameOver.play();
+      break;
+    case "Miss Deadeye":
+      Deadeye_gameOver.currentTime = 0;
+      Deadeye_gameOver.play();
+      break;
+    case "The Damned Captain":
+      Damned_gameOver.currentTime = 0;
+      Damned_gameOver.play();
+      break;
+  }
+}
+
+
+
+
+
 
 export {
   player1,
   player2,
   playerNames,
   playSoundApplause,
-  startDialog,
   playSoundWaterSplash,
   playSoundHit,
   playSoundDestroyed,

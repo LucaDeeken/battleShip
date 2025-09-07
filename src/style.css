@@ -94,6 +94,15 @@ body {
   transition: background-color 1s ease;
 }
 
+#soundIcon {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  cursor: pointer;
+  margin: 80px;
+  z-index: 9999;
+}
+
 #confetti-canvas {
   position: fixed;
   top: 0;
@@ -200,6 +209,7 @@ main {
 }
 
 .hitEmoji {
+  pointer-events: none;
   font-size: 26px;
   padding-top: 5px;
   display: flex;
@@ -224,6 +234,7 @@ main {
   height: 80%;
   width: 80%;
   background-color: rgb(40, 93, 172);
+  pointer-events: none;
 }
 
 .no-clicks {
@@ -879,7 +890,7 @@ padding: 20px;
 
 #confirmPlacementBtn {
   position: absolute;
-  top: 562px;
+  top: 558px;
   right: 240px;
   width: 100px;
   height: 45px;
@@ -899,7 +910,7 @@ padding: 20px;
 
 #resetPlacementBtn {
   position: absolute;
-  top: 562px;
+  top: 558px;
   left: 253px;
   width: 100px;
   height: 45px;

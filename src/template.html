@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Battle-Ship!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="bannerContainer">
@@ -52,9 +58,9 @@
         <h2 id="insertPNames">Insert Playernames</h2>
         <fieldset id="playerNameFieldset">
           <label id="labelPlayer" for="playerOneName">Player One:</label>
-          <input type="text" id="playerOneName" placeholder="Type Name Here" />
+          <input type="text" id="playerOneName" placeholder="Type Name Here" required />
           <label id="labelPlayerTwo" for="playerTwoName">Player Two:</label>
-          <input type="text" id="playerTwoName" placeholder="Type Name Here" />
+          <input type="text" id="playerTwoName" placeholder="Type Name Here" required />
         </fieldset>
         <button id="confirmBtn" value="default">Confirm</button>
         <button id="cancelBtn" value="cancel" type="reset" formmethod="dialog">
@@ -118,14 +124,19 @@
           </div>
           <section id="descriptionForBot">
             <h3 id="botHeader">Sir Daydream</h3>
-            <p id="botTextField">Drifting through the skies, he seeks a shadow the ocean claimed long ago. His ship follows his sorrow more than his command.</p>
-            <p id="botDifficulty">Difficulty: <span id="difficultyScale">EASY</span></p>
+            <p id="botTextField">
+              Drifting through the skies, he seeks a shadow the ocean claimed
+              long ago. His ship follows his sorrow more than his command.
+            </p>
+            <p id="botDifficulty">
+              Difficulty: <span id="difficultyScale">EASY</span>
+            </p>
           </section>
         </div>
         <div id="botDiffBtns">
-        <button id="confirmBtn" class="confirmBotDifficulty">Confirm</button>
-        <button id="cancelBtn" class="returnBotDifficulty">Return</button>
-          </div>
+          <button id="confirmBtn" class="confirmBotDifficulty">Confirm</button>
+          <button id="cancelBtn" class="returnBotDifficulty">Return</button>
+        </div>
       </form>
     </dialog>
 

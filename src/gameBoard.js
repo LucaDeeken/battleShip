@@ -5,6 +5,8 @@ import {
   playSoundWaterSplash,
   playSoundHit,
   playSoundDestroyed,
+  playSoundFirstHit,
+  playSoundOneLeftHit,
 } from "./gameFlow.js";
 import { gameOverDialog, showDialogShipSunk } from "./DOMmanipulation.js";
 
@@ -66,8 +68,11 @@ export class Gameboard {
     this.botHardModeFields = false;
     this.bothEndsAreWater = false;
     this.shipSunkButOthersStillHit = false;
+    this.firstHit = true;
+    this.shipSunkCounter = 0;
   }
 
+  //manages the attackMechanism
   receiveAttack(gridObject, gameboard) {
     if (gridObject.hit === false) {
       gridObject.hit = true;
@@ -77,12 +82,12 @@ export class Gameboard {
         return true;
       }
     } else {
-      console.log("Jup");
       return false;
     }
     return false;
   }
 
+  //finds the clicked gamefield Div in the gameboardObject
   findObjectFromGrid(dataIndex) {
     if (dataIndex > 99 || dataIndex < 0) {
       return false;
@@ -98,6 +103,7 @@ export class Gameboard {
     }
   }
 
+  //builds the gameboard on the frontend.
   buildFields() {
     const fieldArea = document.querySelector(".fieldArea");
     const fireArea = document.querySelector(".fireArea");
@@ -122,6 +128,7 @@ export class Gameboard {
     }
   }
 
+  //builds the gameboard on the frontend for the ownPlacementMode
   ownPlacementPhase() {
     const fieldArea = document.querySelector(".fieldArea");
     for (let i = 0; i < 100; i++) {
@@ -136,6 +143,7 @@ export class Gameboard {
     }
   }
 
+  //spawns the shops randomly
   randomSpawn() {
     let startingObject = 0;
     let spawnLocation = 0;
@@ -261,8 +269,9 @@ export class Gameboard {
     return savedField;
   }
 
-  async botTurnEasy() {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  //logic for the easy bot
+  async botTurnEasy(enemy) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const randomIndex = Math.floor(Math.random() * this.botHitFields.length);
     let hitField = this.botHitFields[randomIndex];
@@ -272,24 +281,35 @@ export class Gameboard {
     this.botHitFields.splice(randomIndex, 1);
 
     const shipSunk = player1.gameboard.shipSunk();
-    console.log(shipSunk);
     if (shipSunk !== false) {
-      console.log("YEHAWW");
       playSoundDestroyed();
       showDialogShipSunk(shipSunk.shipName, player1, shipSunk.shipColor);
+
+      this.shipSunkCounter = this.shipSunkCounter + 1;
+      if (this.shipSunkCounter === 4) {
+        playSoundOneLeftHit(enemy);
+      }
     }
 
     if (attack === true) {
-      playSoundHit();
-      return this.botTurnEasy();
+      playSoundHit(enemy);
+
+      if (this.firstHit) {
+        setTimeout(() => {
+          playSoundFirstHit(enemy);
+          this.firstHit = false;
+        }, 2000);
+      }
+      return this.botTurnEasy(enemy);
     } else {
       playSoundWaterSplash();
       return;
     }
   }
 
-  async botTurnMedium() {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  //logic for the medium bot
+  async botTurnMedium(enemy) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     if (this.botHitShips.length < 1) {
       const randomIndex = Math.floor(Math.random() * this.botHitFields.length);
@@ -297,43 +317,40 @@ export class Gameboard {
       // Zufälliges Element aus dem Array
       let hitField = this.botHitFields[randomIndex];
       let hitGridObject = this.findObjectFromGrid(hitField);
-      console.log(hitGridObject);
-
       const ownFieldGrids = document.querySelector(".fieldArea");
       let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
       this.botHitFields.splice(randomIndex, 1);
 
       if (attack === true) {
         playSoundHit();
+        if (this.firstHit) {
+          setTimeout(() => {
+            playSoundFirstHit(enemy);
+            this.firstHit = false;
+          }, 2000);
+        }
         this.botHitShips.push(hitField);
-        return this.botTurnMedium();
+        return this.botTurnMedium(enemy);
       } else {
         playSoundWaterSplash();
         return;
       }
     } else {
-      console.log(this.botHitShips);
       let lastHitField = 0;
-      console.log(this.shipSunkButOthersStillHit);
-      if(this.shipSunkButOthersStillHit) {
+      if (this.shipSunkButOthersStillHit) {
         lastHitField = this.botHitShips[0];
-        this.shipSunkButOthersStillHit= false;
-        console.log("reinda");
+        this.shipSunkButOthersStillHit = false;
       } else {
         lastHitField = this.botHitShips[this.botHitShips.length - 1];
       }
-      console.log(this.movementsBot);
-      console.log(this.movementsBot.length);
-      if(this.movementsBot.length<1) {
+
+      if (this.movementsBot.length < 1) {
         lastHitField = this.botHitShips[0];
         this.movementsBot = [-1, 1, 10, -10];
       }
 
-
-      console.log(lastHitField);
       if (this.bothEndsAreWater === true) {
         lastHitField = this.botHitShips[0];
-        console.log(lastHitField);
       }
 
       let cordNextToHit = 0;
@@ -418,7 +435,7 @@ export class Gameboard {
           this.right = false;
           this.up = false;
           this.down = false;
-          return this.botTurnMedium();
+          return this.botTurnMedium(enemy);
         }
 
         if (
@@ -431,16 +448,14 @@ export class Gameboard {
           this.right = false;
           this.up = false;
           this.down = false;
-          return this.botTurnMedium();
+          return this.botTurnMedium(enemy);
         }
       }
 
       let hitGridObject = this.findObjectFromGrid(cordNextToHit + lastHitField);
-      console.log(hitGridObject);
       let gridAlreadyHit = hitGridObject.hit;
       const ownFieldGrids = document.querySelector(".fieldArea");
       let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
-      console.log(gridAlreadyHit);
       if (gridAlreadyHit === true) {
         const index = this.movementsBot.indexOf(cordNextToHit);
         this.movementsBot.splice(index, 1);
@@ -448,7 +463,7 @@ export class Gameboard {
         this.right = false;
         this.up = false;
         this.down = false;
-        return this.botTurnMedium();
+        return this.botTurnMedium(enemy);
       }
       const indexOfGrid = Number(hitGridObject.index);
       const indexOfField = this.botHitFields.indexOf(indexOfGrid);
@@ -461,6 +476,11 @@ export class Gameboard {
       if (shipSunk !== false) {
         playSoundDestroyed();
         showDialogShipSunk(shipSunk.shipName, player1, shipSunk.shipColor);
+
+        this.shipSunkCounter = this.shipSunkCounter + 1;
+        if (this.shipSunkCounter === 4) {
+          playSoundOneLeftHit(enemy);
+        }
       }
 
       if (attack === true && shipSunk !== false) {
@@ -481,7 +501,7 @@ export class Gameboard {
           if (botWonTheGame === true) {
             return;
           } else {
-            return this.botTurnMedium();
+            return this.botTurnMedium(enemy);
           }
         } else {
           let nameOfSunkShip = shipSunk.shipName;
@@ -504,7 +524,7 @@ export class Gameboard {
           this.up = false;
           this.down = false;
           this.right = false;
-          return this.botTurnMedium();
+          return this.botTurnMedium(enemy);
           //wenn andere getroffen wurden
         }
       } else if (attack === true) {
@@ -530,7 +550,7 @@ export class Gameboard {
             break;
         }
 
-        return this.botTurnMedium();
+        return this.botTurnMedium(enemy);
       } else {
         const indexOfDirection = this.movementsBot.indexOf(cordNextToHit);
         this.movementsBot.splice(indexOfDirection, 1);
@@ -542,61 +562,55 @@ export class Gameboard {
         return;
       }
     }
-
   }
 
-  async botTurnHard() {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
+  //logic for the hard bot
+  async botTurnHard(enemy) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     if (this.botHardModeFields === false) {
       this.botTurnHardHitFields();
       this.botHardModeFields = true;
     }
-    console.log(this.botHitFields);
-    console.log(this.botHitShips);
     if (this.botHitShips.length < 1) {
       const randomIndex = Math.floor(Math.random() * this.botHitFields.length);
 
       // Zufälliges Element aus dem Array
       let hitField = this.botHitFields[randomIndex];
       let hitGridObject = this.findObjectFromGrid(hitField);
-      console.log(hitGridObject);
-
       const ownFieldGrids = document.querySelector(".fieldArea");
       let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
       this.botHitFields.splice(randomIndex, 1);
 
       if (attack === true) {
         playSoundHit();
+        if (this.firstHit) {
+          setTimeout(() => {
+            playSoundFirstHit(enemy);
+            this.firstHit = false;
+          }, 2000);
+        }
         this.botHitShips.push(hitField);
-        return this.botTurnHard();
+        return this.botTurnHard(enemy);
       } else {
         playSoundWaterSplash();
         return;
       }
     } else {
-      console.log(this.botHitShips);
       let lastHitField = 0;
-      console.log(this.shipSunkButOthersStillHit);
-      if(this.shipSunkButOthersStillHit) {
+      if (this.shipSunkButOthersStillHit) {
         lastHitField = this.botHitShips[0];
-        this.shipSunkButOthersStillHit= false;
-        console.log("reinda");
+        this.shipSunkButOthersStillHit = false;
       } else {
         lastHitField = this.botHitShips[this.botHitShips.length - 1];
       }
-      console.log(this.movementsBot);
-      console.log(this.movementsBot.length);
-      if(this.movementsBot.length<1) {
+
+      if (this.movementsBot.length < 1) {
         lastHitField = this.botHitShips[0];
         this.movementsBot = [-1, 1, 10, -10];
       }
 
-
-      console.log(lastHitField);
       if (this.bothEndsAreWater === true) {
         lastHitField = this.botHitShips[0];
-        console.log(lastHitField);
       }
 
       let cordNextToHit = 0;
@@ -681,7 +695,7 @@ export class Gameboard {
           this.right = false;
           this.up = false;
           this.down = false;
-          return this.botTurnHard();
+          return this.botTurnHard(enemy);
         }
 
         if (
@@ -694,16 +708,13 @@ export class Gameboard {
           this.right = false;
           this.up = false;
           this.down = false;
-          return this.botTurnHard();
+          return this.botTurnHard(enemy);
         }
       }
-
       let hitGridObject = this.findObjectFromGrid(cordNextToHit + lastHitField);
-      console.log(hitGridObject);
       let gridAlreadyHit = hitGridObject.hit;
       const ownFieldGrids = document.querySelector(".fieldArea");
       let attack = this.receiveAttack(hitGridObject, ownFieldGrids);
-      console.log(gridAlreadyHit);
       if (gridAlreadyHit === true) {
         const index = this.movementsBot.indexOf(cordNextToHit);
         this.movementsBot.splice(index, 1);
@@ -711,7 +722,7 @@ export class Gameboard {
         this.right = false;
         this.up = false;
         this.down = false;
-        return this.botTurnHard();
+        return this.botTurnHard(enemy);
       }
       const indexOfGrid = Number(hitGridObject.index);
       const indexOfField = this.botHitFields.indexOf(indexOfGrid);
@@ -724,6 +735,11 @@ export class Gameboard {
       if (shipSunk !== false) {
         playSoundDestroyed();
         showDialogShipSunk(shipSunk.shipName, player1, shipSunk.shipColor);
+
+        this.shipSunkCounter = this.shipSunkCounter + 1;
+        if (this.shipSunkCounter === 4) {
+          playSoundOneLeftHit(enemy);
+        }
       }
 
       if (attack === true && shipSunk !== false) {
@@ -744,7 +760,7 @@ export class Gameboard {
           if (botWonTheGame === true) {
             return;
           } else {
-            return this.botTurnHard();
+            return this.botTurnHard(enemy);
           }
         } else {
           let nameOfSunkShip = shipSunk.shipName;
@@ -767,7 +783,7 @@ export class Gameboard {
           this.up = false;
           this.down = false;
           this.right = false;
-          return this.botTurnHard();
+          return this.botTurnHard(enemy);
           //wenn andere getroffen wurden
         }
       } else if (attack === true) {
@@ -793,7 +809,7 @@ export class Gameboard {
             break;
         }
 
-        return this.botTurnHard();
+        return this.botTurnHard(enemy);
       } else {
         const indexOfDirection = this.movementsBot.indexOf(cordNextToHit);
         this.movementsBot.splice(indexOfDirection, 1);
@@ -807,6 +823,7 @@ export class Gameboard {
     }
   }
 
+  //stores the fields, which the hard bot only attacks (he skips every second field).
   botTurnHardHitFields() {
     this.botHitFields = [];
     let gamble = Math.floor(Math.random() * 2);
@@ -856,8 +873,6 @@ export class Gameboard {
     }
   }
 
-
-
   getOwnPlacementsIntoStartingGame() {
     for (let key in this.ships) {
       let color = this.ships[key].shipColor;
@@ -866,6 +881,8 @@ export class Gameboard {
     let savedField = document.querySelector(".fieldArea");
     return savedField;
   }
+
+  //resets the own placementStage
   resetPlacementProcess() {
     this.arrayOfShips.forEach(
       (item) => ((item.ship = null), (item.shipDetails = null)),
@@ -875,6 +892,7 @@ export class Gameboard {
     this.secondIter = true;
   }
 
+  //gets the right color for the equivalent ship.
   getShipColor(lengthOfShip) {
     let color = "";
     switch (lengthOfShip) {
@@ -899,6 +917,7 @@ export class Gameboard {
     return color;
   }
 
+  //Saves the coordinates of the ships, when self placed.
   saveOwnPlacementGameboard() {
     const placementField = document.querySelector(".fieldArea");
     const fieldBlocks = placementField.querySelectorAll(".fieldBlock");
@@ -912,6 +931,8 @@ export class Gameboard {
       }
     }
   }
+
+  //gets the right ship, if you enter the colorType.
   getShipNameByColor(color) {
     for (const key in this.ships) {
       if (this.ships[key].shipColor === color) {
@@ -932,6 +953,7 @@ export class Gameboard {
     }
   }
 
+  //prints the color of the ships on the board.
   printColorOnShipGrids(color) {
     let currentBackgroundColor = "rgb(40, 93, 172)";
     let element = "";
@@ -965,6 +987,7 @@ export class Gameboard {
     }
   }
 
+  //hides ships, when the active player switches
   hideShips() {
     const savedField = document.querySelector(".fireArea");
     const fireGrids = savedField.getElementsByClassName("fieldBlock");
@@ -973,6 +996,7 @@ export class Gameboard {
     }
   }
 
+  //marks the hit field.
   markHitShips(gameBoard) {
     let element = "";
     for (let i = 0; i < this.placeBoard.length; i++) {
@@ -1009,12 +1033,11 @@ export class Gameboard {
     }
   }
 
+  //marks if a ship completely sunk
   shipSunk() {
     const shipList = Object.values(this.ships);
-    console.log(shipList);
     for (let item of shipList) {
       if (item.sunk === true && item.onSunkList === false) {
-        console.log(item.shipName + "just Sunk!");
         item.onSunkList = true;
         return item;
       }
@@ -1022,6 +1045,7 @@ export class Gameboard {
     return false;
   }
 
+  //checks if all ships sunk
   allShipsSunk(player) {
     let shipStillThere = false;
     for (let i = 0; i < this.placeBoard.length; i++) {
